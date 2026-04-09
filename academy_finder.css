@@ -1,0 +1,707 @@
+/* ========================================
+   Academy Finder — Light Theme
+   Matches EliteForge home page design
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Variables ── */
+:root {
+    --af-primary: #2563eb;
+    --af-primary-light: #3b82f6;
+    --af-primary-dark: #1e40af;
+    --af-accent: #facc15;
+    --af-bg: #f4f6f9;
+    --af-bg-white: #ffffff;
+    --af-surface: #ffffff;
+    --af-surface-hover: #f8fafc;
+    --af-text: #1e293b;
+    --af-text-muted: #64748b;
+    --af-border: #e2e8f0;
+    --af-success: #22c55e;
+    --af-danger: #ef4444;
+    --af-radius: 12px;
+    --af-radius-sm: 8px;
+    --af-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --af-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --af-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Page Base ── */
+.af-page {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--af-bg);
+    min-height: 100vh;
+    color: var(--af-text);
+}
+
+.af-page .container {
+    max-width: 1200px;
+}
+
+/* ── Hero Header — matches home hero ── */
+.af-hero {
+    background-image: url('https://t3.ftcdn.net/jpg/06/35/47/44/360_F_635474412_EIVHNEttUFaIlnpjqrZOsDRn1mHM3T8P.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 60px 0 50px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.af-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.af-hero * {
+    position: relative;
+    z-index: 1;
+}
+
+.af-hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.af-hero h1 i {
+    color: var(--af-accent);
+    margin-right: 10px;
+}
+
+.af-hero p {
+    color: rgba(255,255,255,0.85);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ── Back Button ── */
+.af-back-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--af-transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.af-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    transform: translateX(-3px);
+}
+
+/* ── Skill Categories ── */
+.af-skill-section {
+    padding: 40px 0;
+}
+
+.af-category {
+    margin-bottom: 24px;
+}
+
+.af-category-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--af-text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.af-category-title i {
+    color: var(--af-primary);
+}
+
+.af-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.af-chip {
+    background: var(--af-surface);
+    border: 2px solid var(--af-border);
+    color: var(--af-text-muted);
+    padding: 9px 22px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--af-transition);
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.af-chip:hover {
+    border-color: var(--af-primary-light);
+    color: var(--af-primary);
+    background: #eff6ff;
+    transform: translateY(-2px);
+    box-shadow: var(--af-shadow);
+}
+
+.af-chip.active {
+    background: var(--af-primary);
+    border-color: var(--af-primary);
+    color: white;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transform: translateY(-2px);
+}
+
+/* ── Search Button ── */
+.af-search-btn {
+    background: linear-gradient(135deg, var(--af-primary-dark), var(--af-primary));
+    border: none;
+    color: white;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--af-transition);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.af-search-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+}
+
+.af-search-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Location Badge ── */
+.af-location-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--af-surface);
+    border: 1px solid var(--af-border);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: var(--af-text-muted);
+    margin-top: 12px;
+}
+
+.af-location-badge.success {
+    border-color: rgba(34, 197, 94, 0.4);
+    color: var(--af-success);
+    background: #f0fdf4;
+}
+
+.af-location-badge.error {
+    border-color: rgba(239, 68, 68, 0.4);
+    color: var(--af-danger);
+    background: #fef2f2;
+}
+
+/* ── Results Section ── */
+.af-results {
+    padding: 20px 0 60px;
+}
+
+.af-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.af-results-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--af-text);
+}
+
+.af-results-count {
+    background: var(--af-primary);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ── Academy Cards — matches home feature-card style ── */
+.af-card {
+    background: var(--af-surface);
+    border: none;
+    border-left: 5px solid var(--af-primary);
+    border-radius: var(--af-radius);
+    padding: 0;
+    margin-bottom: 18px;
+    transition: var(--af-transition);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--af-shadow);
+}
+
+.af-card:hover {
+    transform: scale(1.02);
+    box-shadow: var(--af-shadow-lg);
+}
+
+.af-card-body {
+    display: flex;
+    gap: 20px;
+    padding: 22px;
+    align-items: center;
+}
+
+.af-card-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--af-radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f1f5f9;
+}
+
+.af-card-photo.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--af-primary-light);
+    background: #eff6ff;
+}
+
+.af-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.af-card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--af-text);
+}
+
+.af-card-skill {
+    display: inline-block;
+    background: #eff6ff;
+    color: var(--af-primary);
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.af-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.af-stars {
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+.af-rating-num {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--af-text);
+}
+
+.af-rating-count {
+    color: var(--af-text-muted);
+    font-size: 0.8rem;
+}
+
+.af-card-address {
+    color: var(--af-text-muted);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.af-card-address i {
+    margin-top: 3px;
+    color: var(--af-primary);
+}
+
+.af-card-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.af-view-btn {
+    background: var(--af-primary);
+    border: none;
+    color: white;
+    padding: 9px 22px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--af-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.af-view-btn:hover {
+    background: var(--af-primary-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ── Loading Spinner ── */
+.af-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px 0;
+}
+
+.af-spinner .spinner-ring {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--af-border);
+    border-top-color: var(--af-primary);
+    border-radius: 50%;
+    animation: af-spin 0.8s linear infinite;
+}
+
+@keyframes af-spin {
+    to { transform: rotate(360deg); }
+}
+
+.af-spinner p {
+    color: var(--af-text-muted);
+    font-size: 0.95rem;
+}
+
+/* ── Empty / Error State ── */
+.af-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--af-text-muted);
+}
+
+.af-empty i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--af-primary-light);
+    opacity: 0.5;
+}
+
+.af-empty h4 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--af-text);
+}
+
+/* ═════════════════════════════════════
+   Details Page
+   ═════════════════════════════════════ */
+
+.af-detail-hero {
+    background-image: url('https://t3.ftcdn.net/jpg/06/35/47/44/360_F_635474412_EIVHNEttUFaIlnpjqrZOsDRn1mHM3T8P.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 40px 0;
+    color: white;
+    position: relative;
+}
+
+.af-detail-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.af-detail-hero * {
+    position: relative;
+    z-index: 1;
+}
+
+.af-detail-name {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.af-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.af-detail-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+.af-detail-meta .open-badge {
+    background: rgba(34, 197, 94, 0.25);
+    color: #86efac;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.af-detail-meta .closed-badge {
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ── Info Grid ── */
+.af-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 32px 0;
+}
+
+.af-info-card {
+    background: var(--af-surface);
+    border: 1px solid var(--af-border);
+    border-radius: var(--af-radius);
+    padding: 24px;
+    box-shadow: var(--af-shadow);
+}
+
+.af-info-card h5 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--af-text-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.af-info-card h5 i {
+    color: var(--af-primary);
+}
+
+.af-info-card p,
+.af-info-card a {
+    color: var(--af-text);
+    font-size: 0.95rem;
+    margin: 0;
+    word-break: break-word;
+}
+
+.af-info-card a {
+    color: var(--af-primary);
+    text-decoration: none;
+}
+
+.af-info-card a:hover {
+    text-decoration: underline;
+}
+
+.af-hours-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.af-hours-list li {
+    padding: 6px 0;
+    font-size: 0.88rem;
+    color: var(--af-text-muted);
+    border-bottom: 1px solid var(--af-border);
+}
+
+.af-hours-list li:last-child {
+    border-bottom: none;
+}
+
+/* ── Photos Gallery ── */
+.af-photos {
+    padding: 20px 0;
+}
+
+.af-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.af-photos-grid img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--af-radius-sm);
+    transition: var(--af-transition);
+    cursor: pointer;
+    box-shadow: var(--af-shadow);
+}
+
+.af-photos-grid img:hover {
+    transform: scale(1.03);
+    box-shadow: var(--af-shadow-lg);
+}
+
+/* ── Reviews ── */
+.af-reviews {
+    padding: 20px 0 40px;
+}
+
+.af-review-card {
+    background: var(--af-surface);
+    border: 1px solid var(--af-border);
+    border-radius: var(--af-radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--af-shadow);
+}
+
+.af-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.af-review-author {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--af-text);
+}
+
+.af-review-time {
+    color: var(--af-text-muted);
+    font-size: 0.8rem;
+}
+
+.af-review-text {
+    color: var(--af-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ── Map ── */
+.af-map-container {
+    padding: 20px 0;
+}
+
+.af-map {
+    width: 100%;
+    height: 400px;
+    border-radius: var(--af-radius);
+    border: 1px solid var(--af-border);
+    overflow: hidden;
+    box-shadow: var(--af-shadow);
+}
+
+/* ── Section Title ── */
+.af-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--af-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.af-section-title i {
+    color: var(--af-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .af-hero h1 {
+        font-size: 1.7rem;
+    }
+
+    .af-card-body {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .af-card-photo {
+        width: 100%;
+        height: 150px;
+    }
+
+    .af-card-actions {
+        align-items: stretch;
+    }
+
+    .af-view-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .af-detail-name {
+        font-size: 1.5rem;
+    }
+
+    .af-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Animations ── */
+@keyframes af-fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.af-animate {
+    animation: af-fadeUp 0.4s ease forwards;
+}
+
+.af-animate:nth-child(2) { animation-delay: 0.08s; }
+.af-animate:nth-child(3) { animation-delay: 0.12s; }
+.af-animate:nth-child(4) { animation-delay: 0.16s; }
+.af-animate:nth-child(5) { animation-delay: 0.2s; }
+.af-animate:nth-child(6) { animation-delay: 0.24s; }

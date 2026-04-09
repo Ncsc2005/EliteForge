@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 8%;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #facc15;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(to right, #2563eb, #1e40af);
+    color: white;
+    overflow: hidden;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero p {
+    max-width: 600px;
+    margin: auto;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.hero-buttons {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-buttons .btn-primary,
+.hero-buttons .btn-secondary {
+    padding: 12px 24px;
+    margin: 10px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(250, 204, 21, 0.4);
+}
+
+.hero-buttons .btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary {
+    background-color: #facc15;
+    color: black;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #1e3a8a;
+}
+
+/* Sections */
+section {
+    padding: 80px 10%;
+    text-align: center;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.feature-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.feature-card img {
+    border-radius: 8px;
+    transition: transform 0.6s ease;
+}
+
+.feature-card:hover img {
+    transform: scale(1.04);
+}
+
+.feature-card h3 {
+    margin-top: 15px;
+    color: #1e293b;
+}
+
+.feature-card p {
+    color: #64748b;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+/* National */
+.national {
+    background: #ffffff;
+    border-radius: 16px;
+    margin: 40px 10%;
+    padding: 60px 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+.national h2 {
+    color: #1e3a8a;
+}
+
+.national ul {
+    list-style: none;
+    margin-top: 30px;
+    max-width: 600px;
+    margin-inline: auto;
+    text-align: left;
+}
+
+.national li {
+    margin: 15px 0;
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    color: #334155;
+}
+
+.national li:hover {
+    transform: translateX(10px);
+    background: #eff6ff;
+    color: #1d4ed8;
+    box-shadow: 0 4px 10px rgba(29, 78, 216, 0.1);
+}
+
+/* CTA */
+.cta {
+    background: linear-gradient(135deg, #0a1229, #1e3a8a);
+    color: white;
+    margin-top: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 24px;
+    background-color: #05070c;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* Scroll Reveals */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}

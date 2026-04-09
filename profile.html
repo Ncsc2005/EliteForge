@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile — EliteForge</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style>
+body { font-family: 'Inter', sans-serif; }
+
+.skill-tag {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-skill {
+  cursor: pointer;
+  color: red;
+  font-size: 12px;
+}
+
+/* Mandatory banner */
+.mandatory-banner {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  animation: slideDown 0.4s ease;
+}
+
+.mandatory-banner i {
+  color: #d97706;
+  font-size: 1.4rem;
+}
+
+.mandatory-banner p {
+  margin: 0;
+  color: #92400e;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast notification */
+.toast-msg {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 9999;
+  animation: fadeInUp 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.toast-msg.success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.toast-msg.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.eye-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 1rem;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.eye-toggle:hover { color: #475569; }
+</style>
+</head>
+<input type="text" style="display:none">
+<input type="password" style="display:none">
+<body class="bg-gray-50" autocomplete="off">
+
+<!-- NAVBAR (will be hidden in mandatory mode) -->
+<nav id="mainNav" class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+            style="height:40px;width:40px;border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+        <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+    </a>
+
+    <ul id="navLinks" class="nav-links mb-0 pe-4 flex gap-4 list-unstyled d-flex" style="margin-bottom:0">
+        <li><a href="index.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li><a href="academy_finder.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+        <li><a href="competition_tracker.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+        <li><a href="deadline.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+        <li><a href="dashboard.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+    </ul>
+
+    <div class="dropdown">
+        <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                    <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsernameDisplay">Profile</span>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+            <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+<!-- MANDATORY BANNER (shown when profile is not complete) -->
+<div id="mandatoryBanner" class="max-w-7xl mx-auto px-6 mt-4" style="display:none;">
+  <div class="mandatory-banner">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <p>Please complete your profile to access all features. All fields and at least one skill are required.</p>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="m-4 flex justify-between items-center max-w-7xl mx-auto px-2">
+  <h2 class="text-xl font-semibold" style="color:#0a1229">
+    <i class="fa-solid fa-user"></i> Profile
+  </h2>
+
+  <button id="editBtn" class="bg-[#0a1229] text-white py-2 px-3 rounded hover:bg-indigo-700" style="display:none;">
+    <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+  </button>
+</div>
+
+
+<!-- BACK BUTTON (hidden in mandatory mode) -->
+<div id="backBtnContainer" class="max-w-7xl mx-auto px-6 mb-2">
+  <button onclick="history.back()"
+    class="bg-white shadow px-4 py-2 rounded hover:bg-gray-100 flex items-center gap-2 text-[#0a1229] font-medium">
+    <i class="fa-solid fa-arrow-left"></i> Back
+  </button>
+</div>
+
+
+<div class="max-w-7xl mx-auto px-6 pb-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- PROFILE CARD -->
+  <div class="bg-white rounded-2xl shadow p-6 text-center h-fit">
+    <div class="relative w-28 h-28 mx-auto">
+      <img id="profilePic"
+        src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg"
+        class="w-28 h-28 rounded-full object-cover border-4 border-indigo-100">
+      <input type="file" id="picInput" class="hidden" accept="image/*">
+      <button id="changePicBtn"
+        class="hidden absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full text-xs hover:bg-indigo-700">
+        <i class="fa fa-camera"></i>
+      </button>
+    </div>
+    <h2 id="displayName" class="text-xl font-semibold mt-3"></h2>
+  </div>
+
+
+  <!-- RIGHT PANEL -->
+  <div class="lg:col-span-2 bg-white rounded-2xl shadow">
+    <div class="flex gap-8 border-b border-gray-300 px-8 pt-6 font-medium">
+      <button class="tabBtn text-[#0a1229] border-b-2 border-[#0a1229] pb-2" data-tab="info">
+        Basic Info
+      </button>
+      <button class="tabBtn" data-tab="password">
+        Settings
+      </button>
+    </div>
+
+
+    <div id="info" class="tabContent p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-24">Name:</label>
+        <input id="nameInput" type="text" class="inputField border rounded-lg px-3 py-2 flex-1" disabled>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-24">Email: <span class="text-red-500">*</span></label>
+        <input id="emailInput"
+       name="random_email_field"
+       type="email"
+       autocomplete="new-password"
+       class="inputField border rounded-lg px-3 py-2 flex-1"
+       disabled
+       placeholder="Enter your email">
+      </div>
+
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-24">Phone: <span class="text-red-500">*</span></label>
+        <input id="phoneInput"
+       name="random_phone_field"
+       type="text"
+       autocomplete="new-password"
+       class="inputField border rounded-lg px-3 py-2 flex-1"
+       disabled
+       placeholder="Enter your phone">
+        </div>
+
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-24">Location: <span class="text-red-500">*</span></label>
+       <input id="locationInput"
+       name="random_location_field"
+       type="text"
+       autocomplete="new-password"
+       class="inputField border rounded-lg px-3 py-2 flex-1"
+       disabled
+       placeholder="Enter your city">
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="font-semibold">Bio: <span class="text-red-500">*</span></label>
+        <textarea id="bioInput"
+          name="random_bio_field"
+          autocomplete="new-password"
+          rows="3"
+          class="inputField w-full border rounded-lg px-3 py-2"
+          disabled
+          placeholder="Tell us about yourself..."></textarea>
+      </div>
+
+
+      <!-- SKILLS -->
+      <div class="md:col-span-2">
+        <label class="font-semibold">Skills: <span class="text-red-500">*</span> <span class="text-gray-400 text-sm font-normal">(add at least one)</span></label>
+
+        <div class="flex gap-2 mt-2">
+          <input id="skillInput"
+          name="random_skill_field"
+          type="text"
+          autocomplete="new-password"
+          placeholder="Type a skill and click Add"
+          class="border rounded-lg px-3 py-2 flex-1"
+          disabled>
+          <button id="addSkillBtn"
+            class="bg-indigo-600 text-white px-3 py-2 rounded hover:bg-indigo-700 hidden">
+            Add
+          </button>
+        </div>
+
+        <div id="skillList" class="flex flex-wrap gap-2 mt-3"></div>
+      </div>
+
+
+      <div class="editActions md:col-span-2 flex gap-4" style="display:none;">
+        <button class="saveBtn bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Save Changes
+        </button>
+        <button class="cancelEdit bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+
+    <!-- PASSWORD / SETTINGS TAB -->
+    <div id="password" class="tabContent p-8" style="display:none;">
+      <h3 class="text-lg font-semibold mb-6"><i class="fa-solid fa-gear me-2"></i>Account Settings</h3>
+
+      <div class="bg-gray-50 rounded-xl p-6 mb-4" style="border:1px solid #e2e8f0;">
+        <h5 class="font-semibold mb-4"><i class="fa-solid fa-lock me-2 text-primary"></i>Change Password</h5>
+
+        <div class="mb-4">
+          <label class="font-semibold text-sm mb-1 block">Current Password</label>
+          <div style="position:relative;">
+            <input id="currentPassword" type="password" class="border rounded-lg px-3 py-2 w-full" placeholder="Enter current password" style="padding-right:40px;">
+            <button type="button" class="eye-toggle" onclick="togglePasswordVisibility('currentPassword', this)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="font-semibold text-sm mb-1 block">New Password</label>
+          <div style="position:relative;">
+            <input id="newPassword" type="password" class="border rounded-lg px-3 py-2 w-full" placeholder="Enter new password" oninput="checkNewPassword()" style="padding-right:40px;">
+            <button type="button" class="eye-toggle" onclick="togglePasswordVisibility('newPassword', this)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div id="newPwRules" style="display:none; font-size:0.75rem; margin-top:8px; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+            <div id="np1" style="color:#94a3b8; padding:2px 0;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> At least 8 characters</div>
+            <div id="np2" style="color:#94a3b8; padding:2px 0;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> One uppercase letter</div>
+            <div id="np3" style="color:#94a3b8; padding:2px 0;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> One lowercase letter</div>
+            <div id="np4" style="color:#94a3b8; padding:2px 0;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> One number</div>
+            <div id="np5" style="color:#94a3b8; padding:2px 0;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> One special character (@#$%^&*)</div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="font-semibold text-sm mb-1 block">Confirm New Password</label>
+          <div style="position:relative;">
+            <input id="confirmPassword" type="password" class="border rounded-lg px-3 py-2 w-full" placeholder="Confirm new password" style="padding-right:40px;">
+            <button type="button" class="eye-toggle" onclick="togglePasswordVisibility('confirmPassword', this)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="changePassword()" class="bg-[#0a1229] text-white py-2 px-6 rounded-lg hover:bg-indigo-700" style="transition:all 0.3s ease;">
+          <i class="fa-solid fa-floppy-disk me-1"></i> Update Password
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+
+let originalData = {};
+let skills = [];
+let isMandatoryMode = false;
+
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const icon = btn.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fa-solid fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fa-solid fa-eye';
+  }
+}
+
+const nameInput = document.getElementById("nameInput");
+const emailInput = document.getElementById("emailInput");
+const phoneInput = document.getElementById("phoneInput");
+const locationInput = document.getElementById("locationInput");
+const bioInput = document.getElementById("bioInput");
+
+const skillInput = document.getElementById("skillInput");
+const addSkillBtn = document.getElementById("addSkillBtn");
+const skillList = document.getElementById("skillList");
+
+const displayName = document.getElementById("displayName");
+const editBtn = document.getElementById("editBtn");
+const profilePic = document.getElementById("profilePic");
+const picInput = document.getElementById("picInput");
+const changePicBtn = document.getElementById("changePicBtn");
+
+const currentUser = localStorage.getItem("username");
+
+// Show username in navbar
+if (currentUser) {
+  const navEl = document.getElementById("navUsernameDisplay");
+  if (navEl) navEl.textContent = currentUser;
+}
+
+// Tab switching
+document.querySelectorAll(".tabBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tabBtn").forEach(b => {
+      b.classList.remove("text-[#0a1229]", "border-b-2", "border-[#0a1229]");
+      b.style.borderBottom = "none";
+      b.style.color = "#94a3b8";
+    });
+    btn.classList.add("text-[#0a1229]", "border-b-2", "border-[#0a1229]");
+    btn.style.borderBottom = "2px solid #0a1229";
+    btn.style.color = "#0a1229";
+
+    document.querySelectorAll(".tabContent").forEach(tc => tc.style.display = "none");
+    const tabId = btn.dataset.tab;
+    document.getElementById(tabId).style.display = tabId === "info" ? "grid" : "block";
+  });
+});
+
+// New password validation
+function checkNewPassword() {
+  const p = document.getElementById("newPassword").value;
+  const rulesDiv = document.getElementById("newPwRules");
+  rulesDiv.style.display = p.length > 0 ? "block" : "none";
+
+  const rules = [
+    { el: "np1", test: p.length >= 8 },
+    { el: "np2", test: /[A-Z]/.test(p) },
+    { el: "np3", test: /[a-z]/.test(p) },
+    { el: "np4", test: /[0-9]/.test(p) },
+    { el: "np5", test: /[@#$%^&*]/.test(p) }
+  ];
+  rules.forEach(r => {
+    const el = document.getElementById(r.el);
+    if (r.test) {
+      el.style.color = "#16a34a";
+      el.querySelector("i").className = "fa-solid fa-check-circle";
+    } else {
+      el.style.color = "#ef4444";
+      el.querySelector("i").className = "fa-solid fa-times-circle";
+    }
+  });
+}
+
+async function changePassword() {
+  const currentPw = document.getElementById("currentPassword").value;
+  const newPw = document.getElementById("newPassword").value;
+  const confirmPw = document.getElementById("confirmPassword").value;
+
+  if (!currentPw || !newPw || !confirmPw) {
+    showToast("Please fill in all password fields", "error");
+    return;
+  }
+
+  if (newPw !== confirmPw) {
+    showToast("New passwords do not match", "error");
+    return;
+  }
+
+  const ok = newPw.length >= 8 &&
+             /[A-Z]/.test(newPw) &&
+             /[a-z]/.test(newPw) &&
+             /[0-9]/.test(newPw) &&
+             /[@#$%^&*]/.test(newPw);
+
+  if (!ok) {
+    showToast("New password does not meet all requirements", "error");
+    return;
+  }
+
+  try {
+    const resp = await fetch("http://localhost:3000/changePassword", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: currentUser, currentPassword: currentPw, newPassword: newPw })
+    });
+    const result = await resp.json();
+
+    if (!resp.ok) {
+      showToast(result.msg || "Failed to change password", "error");
+      return;
+    }
+
+    showToast("Password updated successfully!", "success");
+    document.getElementById("currentPassword").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
+    document.getElementById("newPwRules").style.display = "none";
+  } catch (err) {
+    showToast("Server error. Please try again.", "error");
+  }
+}
+
+// Auth guard
+if (!currentUser) {
+  window.location.href = "landing_page.html";
+}
+
+function logout() {
+  localStorage.removeItem("username");
+  window.location.href = "landing_page.html";
+}
+
+function showToast(message, type) {
+  const toast = document.createElement("div");
+  toast.className = "toast-msg " + type;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function enableEditMode() {
+  nameInput.disabled = false;
+  emailInput.disabled = false;
+  phoneInput.disabled = false;
+  locationInput.disabled = false;
+  bioInput.disabled = false;
+  skillInput.disabled = false;
+  addSkillBtn.classList.remove("hidden");
+  document.querySelectorAll(".editActions").forEach(el => el.style.display = "flex");
+  changePicBtn.classList.remove("hidden");
+  document.querySelectorAll(".remove-skill").forEach(el => el.style.display = "inline-flex");
+  editBtn.style.display = "none";
+}
+
+function disableEditMode() {
+  nameInput.disabled = true;
+  emailInput.disabled = true;
+  phoneInput.disabled = true;
+  locationInput.disabled = true;
+  bioInput.disabled = true;
+  skillInput.disabled = true;
+  addSkillBtn.classList.add("hidden");
+  document.querySelectorAll(".editActions").forEach(el => el.style.display = "none");
+  changePicBtn.classList.add("hidden");
+  document.querySelectorAll(".remove-skill").forEach(el => el.style.display = "none");
+  if (!isMandatoryMode) {
+    editBtn.style.display = "block";
+  }
+}
+
+async function loadProfile() {
+  if (!currentUser) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/profile/${currentUser}`);
+    const data = await res.json();
+
+    nameInput.value = data.name || currentUser;
+    displayName.textContent = data.name || currentUser;
+    emailInput.value = data.email || "";
+    phoneInput.value = data.phone || "";
+    locationInput.value = data.location || "";
+    bioInput.value = data.bio || "";
+    skills = data.skills || [];
+    renderSkills();
+
+    // ✅ FIX: Load profile picture properly
+    if (data.profilePic && data.profilePic.startsWith("data:")) {
+      profilePic.src = data.profilePic;
+    } else {
+      profilePic.src = "https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg";
+    }
+
+    // Check if profile is completed
+    if (!data.profileCompleted) {
+      enterMandatoryMode();
+    } else {
+      editBtn.style.display = "block";
+      disableEditMode();
+    }
+
+  } catch (err) {
+    showToast("Failed to load profile", "error");
+  }
+}
+
+function enterMandatoryMode() {
+  isMandatoryMode = true;
+  document.getElementById("mandatoryBanner").style.display = "block";
+  document.getElementById("navLinks").style.display = "none";
+  document.getElementById("backBtnContainer").style.display = "none";
+  editBtn.style.display = "none";
+
+  // Hide cancel button in mandatory mode
+  document.querySelectorAll(".cancelEdit").forEach(el => el.style.display = "none");
+
+  enableEditMode();
+}
+
+loadProfile();
+
+function renderSkills() {
+  skillList.innerHTML = "";
+  skills.forEach((skill, index) => {
+    const tag = document.createElement("div");
+    tag.className = "skill-tag";
+    tag.innerHTML = `${skill}
+      <span class="remove-skill" onclick="removeSkill(${index})">
+        <i class="fa fa-times"></i>
+      </span>`;
+    skillList.appendChild(tag);
+  });
+}
+
+function removeSkill(index) {
+  skills.splice(index, 1);
+  renderSkills();
+}
+
+addSkillBtn.onclick = () => {
+  const skill = skillInput.value.trim();
+  if (skill === "") return;
+  if (skills.includes(skill)) {
+    showToast("Skill already added", "error");
+    return;
+  }
+  skills.push(skill);
+  skillInput.value = "";
+  renderSkills();
+};
+
+// Allow Enter to add skill
+skillInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addSkillBtn.click();
+  }
+});
+
+editBtn.onclick = () => {
+  originalData = {
+    name: nameInput.value,
+    email: emailInput.value,
+    phone: phoneInput.value,
+    location: locationInput.value,
+    bio: bioInput.value,
+    profilePic: profilePic.src
+  };
+  enableEditMode();
+};
+
+// Handle picture change click
+changePicBtn.onclick = () => {
+  picInput.click();
+};
+
+picInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      profilePic.src = event.target.result; // update UI immediately
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+document.addEventListener("click", async e => {
+
+  if (e.target.classList.contains("saveBtn")) {
+
+    // Validate required fields
+    const email = emailInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const location = locationInput.value.trim();
+    const bio = bioInput.value.trim();
+
+    if (!email || !phone || !location || !bio) {
+      showToast("Please fill in all required fields (Email, Phone, Location, Bio)", "error");
+      return;
+    }
+
+    if (skills.length === 0) {
+      showToast("Please add at least one skill", "error");
+      return;
+    }
+
+    const profileData = {
+      name: nameInput.value,
+      email: email,
+      phone: phone,
+      location: location,
+      bio: bio,
+      skills: skills,
+      profilePic: profilePic.src.startsWith('data:') || profilePic.src.startsWith('http') ? profilePic.src : ""
+    };
+
+    try {
+      const resp = await fetch("http://localhost:3000/updateProfile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileData)
+      });
+
+      const result = await resp.json();
+      displayName.textContent = nameInput.value;
+
+      if (isMandatoryMode) {
+        showToast("Profile completed! Redirecting to home...", "success");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1200);
+      } else {
+        showToast("Profile updated successfully!", "success");
+        disableEditMode();
+      }
+    } catch (err) {
+      showToast("Failed to save profile", "error");
+    }
+  }
+
+  if (e.target.classList.contains("cancelEdit")) {
+    nameInput.value = originalData.name;
+    emailInput.value = originalData.email;
+    phoneInput.value = originalData.phone;
+    locationInput.value = originalData.location;
+    bioInput.value = originalData.bio;
+    if (originalData.profilePic) {
+      profilePic.src = originalData.profilePic;
+    } else {
+      profilePic.src = "https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg";
+    }
+    disableEditMode();
+  }
+
+});
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+</script>
+
+</body>
+</html>

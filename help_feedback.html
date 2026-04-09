@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Help & Feedback</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+/* Search Bar */
+
+
+
+</style>
+
+</head>
+
+<body class="min-h-screen bg-gray-50">
+
+<!-- Auth Guard -->
+<script>
+(function(){
+  const user = localStorage.getItem("username");
+  if(!user) { window.location.href = "landing_page.html"; return; }
+  fetch(`http://localhost:3000/api/checkProfile/${user}`)
+    .then(r => r.json())
+    .then(d => { if(!d.profileCompleted) window.location.href = "profile.html"; })
+    .catch(() => {});
+})();
+function logout() { localStorage.removeItem("username"); window.location.href = "landing_page.html"; }
+</script>
+
+<!-- NAVBAR -->
+
+<nav class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+            style="height:40px;width:40px;border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+        <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+    </a>
+
+    <ul class="nav-links mb-0 pe-4 flex gap-4 list-unstyled d-flex" style="margin-bottom:0">
+        <li><a href="index.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li><a href="academy_finder.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+        <li><a href="competition_tracker.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+        <li><a href="deadline.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+        <li><a href="dashboard.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+    </ul>
+
+    <div class="dropdown">
+        <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsername">Profile</span>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+            <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const u = localStorage.getItem("username");
+  if (u) { const el = document.getElementById("navUsername"); if (el) el.textContent = u; }
+})();
+</script>
+
+<!-- PAGE TITLE -->
+
+
+<!-- MAIN CONTENT -->
+
+<div class="container mx-auto w-[800px] max-w-[95%] bg-gradient-to-br from-white to-[#c3cfe2] rounded-xl shadow-lg mb-10 pb-10">
+<div class="text-center mt-4 mb-3 pt-4">
+<h1 class="font-bold fs-4">Help & Feedback</h1>
+<p class="text-muted">Get support and share your experience with EliteForge</p>
+</div>
+<div class="p-6">
+
+<h5 class="text-xl font-semibold mb-4">Frequently asked questions</h5>
+
+<!-- Accordion -->
+
+<div class="space-y-4">
+
+<!-- Item -->
+
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+
+<button type="button"
+class="accordion-btn w-full p-4 flex justify-between items-center text-left font-medium hover:bg-gray-50">
+
+<span>What is EliteForge?</span>
+
+<svg class="w-5 h-5 transition-transform duration-300" fill="none"
+stroke="currentColor" viewBox="0 0 24 24">
+
+<path stroke-linecap="round" stroke-linejoin="round"
+stroke-width="2" d="M19 9l-7 7-7-7"/>
+
+</svg>
+
+</button>
+
+<div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+
+<div class="p-4 border-t text-gray-600">
+
+Elite Forge is a Smart Competition & Academy Finder Platform that helps students discover academies,
+track competitions, receive deadline alerts, and build their skill profile.
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Item -->
+
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+
+<button type="button"
+class="accordion-btn w-full p-4 flex justify-between items-center text-left font-medium hover:bg-gray-50">
+
+<span>What is the Participation Dashboard?</span>
+
+<svg class="w-5 h-5 transition-transform duration-300" fill="none"
+stroke="currentColor" viewBox="0 0 24 24">
+
+<path stroke-linecap="round" stroke-linejoin="round"
+stroke-width="2" d="M19 9l-7 7-7-7"/>
+
+</svg>
+
+</button>
+
+<div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+
+<div class="p-4 border-t text-gray-600">
+
+It shows: Competitions you joined, Certificates earned, Skills learned, Upcoming events.
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Item -->
+
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+
+<button type="button"
+class="accordion-btn w-full p-4 flex justify-between items-center text-left font-medium hover:bg-gray-50">
+
+<span>How do I track upcoming competitions?</span>
+
+<svg class="w-5 h-5 transition-transform duration-300" fill="none"
+stroke="currentColor" viewBox="0 0 24 24">
+
+<path stroke-linecap="round" stroke-linejoin="round"
+stroke-width="2" d="M19 9l-7 7-7-7"/>
+
+</svg>
+
+</button>
+
+<div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+
+<div class="p-4 border-t text-gray-600">
+
+Go to the Competition Tracker page to view all upcoming competitions with deadlines and registration details.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FEEDBACK FORM -->
+
+
+<form id="feedbackForm" class="px-6" autocomplete="off">
+
+<div class="bg-white rounded-xl p-6">
+
+<h4 class="text-xl font-semibold text-center mb-4">Send us your feedback</h4>
+
+<form id="feedbackForm" class="px-6" autocomplete="off">
+
+  <input type="text" style="display:none">
+  <input type="password" style="display:none">
+<input type="text"
+id="nameInput"
+name="no_autofill_name"
+class="w-full border rounded-xl p-2 mb-3"
+placeholder="Enter your name"
+autocomplete="off"
+readonly
+onfocus="this.removeAttribute('readonly');"
+required>
+
+<input type="text"
+id="emailInput"
+name="fake_email_field_xyz"
+class="w-full border rounded-xl p-2 mb-3"
+placeholder="Enter your email"
+autocomplete="off"
+inputmode="email"
+readonly
+onfocus="this.removeAttribute('readonly')"
+onblur="validateEmail(this)"
+required>
+
+<textarea id="messageInput"
+class="w-full border rounded-xl p-2 mb-4"
+rows="3"
+placeholder="Write your suggestions"
+autocomplete="off"></textarea>
+
+<p class="text-lg font-semibold text-center">Rate us</p>
+
+<div id="starContainer"
+class="flex justify-center space-x-2 text-2xl cursor-pointer select-none mb-2">
+
+<span class="star text-gray-300">★</span>
+<span class="star text-gray-300">★</span>
+<span class="star text-gray-300">★</span>
+<span class="star text-gray-300">★</span>
+<span class="star text-gray-300">★</span>
+
+</div>
+
+<input type="hidden" id="ratingValue" required>
+
+<p id="ratingError" class="text-red-500 text-sm hidden text-center">
+Please rate us before submitting.
+</p>
+
+<button class="w-full mt-4 bg-blue-600 text-white rounded-xl p-2">
+Submit
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+// Accordion
+
+const buttons = document.querySelectorAll(".accordion-btn");
+
+buttons.forEach(btn => {
+
+btn.addEventListener("click", () => {
+
+const content = btn.nextElementSibling;
+const icon = btn.querySelector("svg");
+
+document.querySelectorAll(".accordion-content").forEach(item => {
+
+if (item !== content) {
+item.style.maxHeight = null;
+item.previousElementSibling.querySelector("svg")
+.classList.remove("rotate-180");
+}
+
+});
+
+if (content.style.maxHeight) {
+
+content.style.maxHeight = null;
+icon.classList.remove("rotate-180");
+
+} else {
+
+content.style.maxHeight = content.scrollHeight + "px";
+icon.classList.add("rotate-180");
+
+}
+
+});
+
+});
+
+// Star Rating
+
+const stars = document.querySelectorAll(".star");
+const ratingInput = document.getElementById("ratingValue");
+const ratingError = document.getElementById("ratingError");
+const form = document.getElementById("feedbackForm");
+
+let selectedRating = 0;
+
+stars.forEach((star, index) => {
+
+star.addEventListener("click", () => {
+
+selectedRating = index + 1;
+ratingInput.value = selectedRating;
+
+stars.forEach((s, i) => {
+
+s.classList.toggle("text-yellow-400", i < selectedRating);
+s.classList.toggle("text-gray-300", i >= selectedRating);
+
+});
+
+ratingError.classList.add("hidden");
+
+});
+
+});
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault(); // stop reload
+
+  if (selectedRating === 0) {
+    ratingError.classList.remove("hidden");
+    return;
+  }
+
+  const name = document.getElementById("nameInput").value;
+  const email = document.getElementById("emailInput").value;
+  const message = document.getElementById("messageInput").value;
+
+  try {
+    const res = await fetch("http://localhost:3000/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        message,
+        rating: selectedRating
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("✅ Feedback submitted successfully!");
+
+      form.reset();
+      selectedRating = 0;
+
+      stars.forEach(s => {
+        s.classList.remove("text-yellow-400");
+        s.classList.add("text-gray-300");
+      });
+
+    } else {
+      alert("❌ " + data.msg);
+    }
+
+  } catch (err) {
+    alert("❌ Server error. Please try again.");
+    console.error(err);
+  }
+});
+</script>
+
+<!-- Bootstrap JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+
+</script>
+<script>
+function validateEmail(input) {
+  const pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!pattern.test(input.value)) {
+    input.setCustomValidity("Please enter a valid email");
+  } else {
+    input.setCustomValidity("");
+  }
+}
+</script>
+</body>
+</html>

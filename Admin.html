@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #f5f7fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    background: #1e3a8a;
+    padding: 20px;
+    color: white;
+}
+
+.sidebar h4 {
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin: 5px 0;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+/* Hover */
+.sidebar a:hover {
+    background: #e9f0ff;
+    color: #0d6efd;
+}
+
+/* ✅ ACTIVE FIX */
+.sidebar a.active {
+    background: #e9f0ff;
+    color: #0d6efd;
+}
+
+/* Cards */
+.card-box {
+    border-radius: 15px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Users */
+.user-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fafafa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+<div class="row">
+
+<!-- Sidebar -->
+<div class="col-md-2 sidebar">
+    <h4>Admin Dashboard</h4>
+
+    <a href="Admin.html" class="active"><i class="fa fa-home me-2"></i>Dashboard</a>
+    <a href="Admin_Users.html"><i class="fa fa-users me-2"></i>Users</a>
+    <a href="Admin_Competitions.html"><i class="fa fa-trophy me-2"></i>Competitions</a>
+    <a href="Admin_Academies.html"><i class="fa fa-graduation-cap me-2"></i>Academies</a>
+    <a href="Admin_Feedback.html"><i class="fa fa-comment me-2"></i>Feedback</a>
+    <a href="landing_page.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a>
+</div>
+
+<!-- Main -->
+<div class="col-md-10 p-4">
+
+<h3 class="mb-4">Welcome, Admin!</h3>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card-box">
+            <small>Total Users</small>
+            <h4 id="totalUsers">0</h4>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-box">
+            <small>Completed Profiles</small>
+            <h4 id="completedProfiles">0</h4>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="card-box mb-4">
+    <h5>User Progress</h5>
+    <canvas id="chart"></canvas>
+</div>
+
+<!-- Users -->
+<div class="card-box">
+    <h5>User Management</h5>
+    <div id="userList"></div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+let chart; // ✅ FIX for chart duplication
+
+// LOAD DASHBOARD
+async function loadDashboard() {
+    try {
+        const res = await fetch(API + "/api/admin/stats");
+        const data = await res.json();
+
+        document.getElementById("totalUsers").innerText = data.totalUsers || 0;
+        document.getElementById("completedProfiles").innerText = data.completedProfiles || 0;
+
+        loadChart(data.progressData || []);
+        loadUsers();
+
+    } catch (err) {
+        console.error("Dashboard Error:", err);
+    }
+}
+
+// LOAD USERS
+async function loadUsers() {
+    try {
+        const res = await fetch(API + "/api/users");
+        const users = await res.json();
+
+        const container = document.getElementById("userList");
+        container.innerHTML = "";
+
+        users.forEach(user => {
+            const div = document.createElement("div");
+            div.className = "user-card";
+
+            div.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <h5>${user.name}</h5>
+                    <div>
+                        <button class="btn btn-sm btn-warning" onclick="banUser('${user._id}')">Ban</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${user._id}')">Delete</button>
+                    </div>
+                </div>
+
+                <p><strong>Email:</strong> ${user.email || "N/A"}</p>
+                <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
+                <p><strong>Status:</strong> ${user.profileCompleted ? "✅ Completed" : "❌ Incomplete"}</p>
+                <p><strong>Banned:</strong> ${user.banned ? "🚫 Yes" : "No"}</p>
+
+                <div>
+                    <strong>🎓 Saved Academies:</strong>
+                    <ul>
+                        ${
+                            user.savedAcademies?.length
+                            ? user.savedAcademies.map(a => `<li>${a}</li>`).join("")
+                            : "<li>No academies saved</li>"
+                        }
+                    </ul>
+                </div>
+
+                <div>
+                    <strong>🏆 Saved Competitions:</strong>
+                    <ul>
+                        ${
+                            user.savedCompetitions?.length
+                            ? user.savedCompetitions.map(c => `<li>${c}</li>`).join("")
+                            : "<li>No competitions saved</li>"
+                        }
+                    </ul>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+
+    } catch (err) {
+        console.error("User Load Error:", err);
+    }
+}
+
+// BAN USER
+async function banUser(id) {
+    await fetch(API + "/api/users/ban/" + id, { method: "PUT" });
+    alert("User banned");
+    loadUsers();
+}
+
+// DELETE USER
+async function deleteUser(id) {
+    if (confirm("Delete user?")) {
+        await fetch(API + "/api/users/" + id, { method: "DELETE" });
+        loadUsers();
+    }
+}
+
+// CHART FIXED
+function loadChart(progressData) {
+    const ctx = document.getElementById('chart');
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: progressData.map(u => u.name),
+            datasets: [{
+                label: 'Progress %',
+                data: progressData.map(u => u.progress),
+                borderWidth: 1
+            }]
+        }
+    });
+}
+
+// INIT
+loadDashboard();
+</script>
+
+</body>
+</html>

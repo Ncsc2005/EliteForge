@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academy Finder — EliteForge</title>
+    <meta name="description" content="Discover nearby academies and training institutes based on your skills and interests.">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts — Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <!-- Academy Finder Styles -->
+    <link rel="stylesheet" href="academy_finder.css">
+
+    <style>
+    /* ── Detail Modal Overlay ── */
+    .af-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9998;
+        display: none;
+        animation: af-fadeIn 0.25s ease;
+    }
+    .af-modal-overlay.show { display: block; }
+
+    /* ── Detail Card (Modal) ── */
+    .af-detail-modal {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        background: #fff;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 680px;
+        max-height: 85vh;
+        overflow-y: auto;
+        z-index: 9999;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+        display: none;
+        animation: af-modalIn 0.3s ease forwards;
+    }
+    .af-detail-modal.show {
+        display: block;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .af-modal-header {
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+        color: white;
+        padding: 28px 30px;
+        border-radius: 16px 16px 0 0;
+        position: relative;
+    }
+    .af-modal-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+    }
+    .af-modal-header p {
+        margin: 0;
+        opacity: 0.85;
+        font-size: 0.9rem;
+    }
+    .af-modal-close {
+        position: absolute;
+        top: 16px; right: 18px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .af-modal-close:hover {
+        background: rgba(255,255,255,0.35);
+    }
+
+    .af-modal-body {
+        padding: 28px 30px;
+    }
+
+    .af-modal-info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+        font-size: 0.95rem;
+        color: #334155;
+    }
+    .af-modal-info-row i {
+        color: #2563eb;
+        width: 20px;
+        text-align: center;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+
+    .af-modal-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+    .af-modal-rating .stars { color: #f59e0b; font-size: 1.1rem; }
+    .af-modal-rating .num { font-weight: 700; font-size: 1.1rem; }
+    .af-modal-rating .count { color: #94a3b8; font-size: 0.85rem; }
+
+    .af-modal-desc {
+        color: #64748b;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        padding: 14px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border-left: 4px solid #2563eb;
+    }
+
+    /* Map in modal */
+    .af-modal-map {
+        width: 100%;
+        height: 220px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Contact buttons */
+    .af-contact-btns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+    }
+    .af-contact-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s;
+        cursor: pointer;
+        border: none;
+    }
+    .af-contact-btn:hover { transform: translateY(-2px); }
+
+    .af-contact-btn.phone {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    .af-contact-btn.phone:hover { background: #bbf7d0; color: #16a34a; }
+
+    .af-contact-btn.email {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+    .af-contact-btn.email:hover { background: #bfdbfe; color: #2563eb; }
+
+    .af-contact-btn.website {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    .af-contact-btn.website:hover { background: #fde68a; color: #d97706; }
+
+    .af-contact-btn.directions {
+        background: #fce7f3;
+        color: #db2777;
+    }
+    .af-contact-btn.directions:hover { background: #fbcfe8; color: #db2777; }
+
+    .af-modal-section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        margin-top: 4px;
+    }
+
+    .af-modal-hours {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 20px;
+        font-size: 0.88rem;
+        color: #475569;
+    }
+    .af-modal-hours span {
+        padding: 4px 0;
+    }
+
+    @keyframes af-fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes af-modalIn {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    </style>
+</head>
+
+<body class="af-page">
+
+    <!-- Auth Guard -->
+    <script>
+    (function(){
+      const user = localStorage.getItem("username");
+      if(!user) { window.location.href = "landing_page.html"; return; }
+      fetch(`http://localhost:3000/api/checkProfile/${user}`)
+        .then(r => r.json())
+        .then(d => { if(!d.profileCompleted) window.location.href = "profile.html"; })
+        .catch(() => {});
+    })();
+    function logout() { localStorage.removeItem("username"); window.location.href = "landing_page.html"; }
+    </script>
+
+    <!-- ═══════ Navbar ═══════ -->
+    <nav class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+        <a href="index.html" class="d-flex align-items-center text-decoration-none">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+                 alt="logo" style="height:40px;width:40px;border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+            <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+        </a>
+
+        <ul class="nav-links mb-0 pe-4 flex gap-4 list-unstyled d-flex" style="margin-bottom:0">
+            <li><a href="index.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fas fa-home me-1"></i>Home</a></li>
+            <li><a href="academy_finder.html" class="text-white text-decoration-none fw-bold" style="color:#facc15 !important;"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+            <li><a href="competition_tracker.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+            <li><a href="deadline.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+            <li><a href="dashboard.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+        </ul>
+
+        <div class="dropdown">
+            <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsername">Profile</span>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+                <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <script>
+    (function(){
+      const u = localStorage.getItem("username");
+      if (u) { const el = document.getElementById("navUsername"); if (el) el.textContent = u; }
+    })();
+    </script>
+
+    <!-- ═══════ Hero Header ═══════ -->
+    <section class="af-hero">
+        <div class="container">
+            <div style="text-align:left;">
+                <a href="index.html" class="af-back-btn mb-3">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+            <h3 id="af-results-header-title"><i class="fa-solid fa-list-ul"></i> Academies</h3>
+            <p style="color:rgba(255,255,255,0.85);font-size:1.1rem;max-width:600px;margin:0 auto 24px;">Select your skills and discover nearby academies & training institutes</p>
+
+            <!-- Search Bar -->
+            <div class="af-search-container" style="display: flex; align-items: center; background: white; padding: 6px 6px 6px 20px; border-radius: 50px; max-width: 600px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;margin-right:10px;"></i>
+                <input type="text" id="searchInput" placeholder="Search academies... e.g. coding, dance, Chennai" style="border: none; outline: none; flex: 1; font-size: 1rem; color: #1e293b; font-family: 'Inter', sans-serif;">
+                <button id="searchQueryBtn" style="background: #2563eb; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ Skill Selection ═══════ -->
+    <section class="af-skill-section">
+        <div class="container">
+
+            <!-- Technical Skills -->
+            <div class="af-category">
+                <div class="af-category-title">
+                    <i class="fa-solid fa-microchip"></i> Technical Skills
+                </div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="af-chip" data-skill="Data Science">Data Science</span>
+                    <span class="af-chip" data-skill="Programming">Programming</span>
+                    <span class="af-chip" data-skill="Artificial Intelligence">Artificial Intelligence</span>
+                </div>
+            </div>
+
+            <!-- Creative Skills -->
+            <div class="af-category">
+                <div class="af-category-title">
+                    <i class="fa-solid fa-palette"></i> Creative Skills
+                </div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Dance">Dance</span>
+                    <span class="af-chip" data-skill="Music">Music</span>
+                    <span class="af-chip" data-skill="Singing">Singing</span>
+                    <span class="af-chip" data-skill="Drama">Drama</span>
+                    <span class="af-chip" data-skill="Photography">Photography</span>
+                    <span class="af-chip" data-skill="Painting">Painting</span>
+                </div>
+            </div>
+
+            <!-- Fitness & Wellness -->
+            <div class="af-category">
+                <div class="af-category-title">
+                    <i class="fa-solid fa-heart-pulse"></i> Fitness & Wellness
+                </div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Yoga">Yoga</span>
+                    <span class="af-chip" data-skill="Meditation">Meditation</span>
+                    <span class="af-chip" data-skill="Fitness Training">Fitness Training</span>
+                </div>
+            </div>
+
+            <!-- Sports -->
+            <div class="af-category">
+                <div class="af-category-title">
+                    <i class="fa-solid fa-futbol"></i> Sports
+                </div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Cricket">Cricket</span>
+                    <span class="af-chip" data-skill="Football">Football</span>
+                    <span class="af-chip" data-skill="Swimming">Swimming</span>
+                    <span class="af-chip" data-skill="Martial Arts">Martial Arts</span>
+                </div>
+            </div>
+
+            <!-- District Filter -->
+            <div class="af-category" style="margin-top:8px;">
+                <div class="af-category-title">
+                    <i class="fa-solid fa-map-location-dot"></i> Filter by District (Optional)
+                </div>
+                <select id="districtFilter" style="width:100%;max-width:400px;padding:10px 16px;border-radius:12px;border:2px solid #e2e8f0;font-family:'Inter',sans-serif;font-size:0.92rem;color:#1e293b;background:#fff;cursor:pointer;transition:0.3s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+                    <option value="">All Districts</option>
+                    <option value="Srikakulam">Srikakulam</option>
+                    <option value="Vizianagaram">Vizianagaram</option>
+                    <option value="Visakhapatnam">Visakhapatnam</option>
+                    <option value="Alluri Sitharama Raju">Alluri Sitharama Raju</option>
+                    <option value="Anakapalli">Anakapalli</option>
+                    <option value="Parvathipuram Manyam">Parvathipuram Manyam</option>
+                    <option value="Kakinada">Kakinada</option>
+                    <option value="East Godavari">East Godavari</option>
+                    <option value="Konaseema">Konaseema</option>
+                    <option value="Eluru">Eluru</option>
+                    <option value="West Godavari">West Godavari</option>
+                    <option value="NTR District">NTR District (Vijayawada)</option>
+                    <option value="Vijayawada">Vijayawada</option>
+                    <option value="Krishna">Krishna</option>
+                    <option value="Guntur">Guntur</option>
+                    <option value="Palnadu">Palnadu</option>
+                    <option value="Bapatla">Bapatla</option>
+                    <option value="Prakasam">Prakasam (Ongole)</option>
+                    <option value="Ongole">Ongole</option>
+                    <option value="Nellore">Nellore</option>
+                    <option value="Tirupati">Tirupati</option>
+                    <option value="Chittoor">Chittoor</option>
+                    <option value="Annamayya">Annamayya</option>
+                    <option value="YSR Kadapa">YSR Kadapa</option>
+                    <option value="Anantapuramu">Anantapuramu</option>
+                    <option value="Sri Sathya Sai">Sri Sathya Sai</option>
+                    <option value="Kurnool">Kurnool</option>
+                    <option value="Nandyal">Nandyal</option>
+                </select>
+            </div>
+
+            <!-- Search Controls -->
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <button class="af-search-btn" id="searchBtn" disabled>
+                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                    Find Nearby Academies
+                </button>
+            </div>
+
+            <!-- Selected Skills Summary -->
+            <div id="selectedSummary" class="mt-3" style="display:none;">
+                <span class="af-location-badge">
+                    <i class="fa-solid fa-tags"></i>
+                    <span id="selectedSkillsText"></span>
+                </span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══════ Results ═══════ -->
+    <section class="af-results" id="resultsSection" style="display:none;">
+        <div class="container">
+            <div class="af-results-header">
+                <h3><i class="fa-solid fa-graduation-cap"></i> Nearby Academies</h3>
+                <span class="af-results-count" id="resultsCount"></span>
+            </div>
+            <div id="resultsContainer"></div>
+        </div>
+    </section>
+
+    <!-- ═══════ Detail Modal Overlay ═══════ -->
+    <div class="af-modal-overlay" id="modalOverlay"></div>
+    <div class="af-detail-modal" id="detailModal"></div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- External Academy Data -->
+    <script src="data_academies_technical.js"></script>
+    <script src="data_academies_creative.js"></script>
+    <script src="data_academies_sports_fitness.js"></script>
+    <script src="data_academies_legacy.js"></script>
+
+    <script>
+    const CITY_COORDS = {
+        "visakhapatnam": {lat: 17.6868, lng: 83.2185},
+        "vizag": {lat: 17.6868, lng: 83.2185},
+        "vijayawada": {lat: 16.5062, lng: 80.6480},
+        "guntur": {lat: 16.3067, lng: 80.4365},
+        "nellore": {lat: 14.4426, lng: 79.9865},
+        "tirupati": {lat: 13.6288, lng: 79.4192},
+        "kurnool": {lat: 15.8281, lng: 78.0373},
+        "anantapur": {lat: 14.6819, lng: 77.6006},
+        "anantapuramu": {lat: 14.6819, lng: 77.6006},
+        "kadapa": {lat: 14.4673, lng: 78.8242},
+        "ysr kadapa": {lat: 14.4673, lng: 78.8242},
+        "rajahmundry": {lat: 17.0005, lng: 81.8040},
+        "east godavari": {lat: 17.0005, lng: 81.8040},
+        "kakinada": {lat: 16.9891, lng: 82.2475},
+        "eluru": {lat: 16.7107, lng: 81.1031},
+        "srikakulam": {lat: 18.2949, lng: 83.8938},
+        "vizianagaram": {lat: 18.1130, lng: 83.3977},
+        "chittoor": {lat: 13.2172, lng: 79.1003},
+        "ongole": {lat: 15.5057, lng: 80.0499},
+        "prakasam": {lat: 15.5057, lng: 80.0499}
+    };
+
+    window.userGeoCoords = null;
+    const _currentUserGeo = localStorage.getItem("username");
+    if (_currentUserGeo) {
+        fetch(`http://localhost:3000/profile/${_currentUserGeo}`)
+        .then(r => r.json())
+        .then(profile => {
+            if (profile.location) {
+                const stdCity = profile.location.trim().toLowerCase();
+                if (CITY_COORDS[stdCity]) {
+                    window.userGeoCoords = CITY_COORDS[stdCity];
+                    if (document.getElementById("resultsSection").style.display === "block") {
+                        const btn = document.getElementById("searchBtn");
+                        if (btn && !btn.disabled) btn.click();
+                    }
+                }
+            }
+        }).catch(err => console.log("Profile geo fetch error", err));
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+        const R = 6371; // Radius of the earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        const d = R * c; // Distance in km
+        return parseFloat(d.toFixed(1));
+    }
+
+    /* ═══════════════════════════════════════════
+       MOCK DATA — Ongole, Andhra Pradesh
+    ═══════════════════════════════════════════ */
+    /* Merge all external data into MOCK_ACADEMIES */
+    const MOCK_ACADEMIES = [
+        ...(typeof TECH_ACADEMIES !== 'undefined' ? TECH_ACADEMIES : []),
+        ...(typeof CREATIVE_ACADEMIES !== 'undefined' ? CREATIVE_ACADEMIES : []),
+        ...(typeof SPORTS_FITNESS_ACADEMIES !== 'undefined' ? SPORTS_FITNESS_ACADEMIES : []),
+
+        ...(typeof LEGACY_ACADEMIES !== 'undefined' ? LEGACY_ACADEMIES : [])
+    ];
+
+
+    /* ═════════════════════════════════════
+       State & DOM Refs
+    ═════════════════════════════════════ */
+    let selectedSkills = [];
+
+    const chips            = document.querySelectorAll(".af-chip");
+    const searchBtn        = document.getElementById("searchBtn");
+    const selectedSummary  = document.getElementById("selectedSummary");
+    const selectedSkillsText = document.getElementById("selectedSkillsText");
+    const resultsSection   = document.getElementById("resultsSection");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsCount     = document.getElementById("resultsCount");
+    const modalOverlay     = document.getElementById("modalOverlay");
+    const detailModal      = document.getElementById("detailModal");
+
+
+    /* ════════════════════
+       Chip Toggle
+    ════════════════════ */
+    chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            const skill = chip.dataset.skill;
+            chip.classList.toggle("active");
+
+            if (chip.classList.contains("active")) {
+                if (!selectedSkills.includes(skill)) selectedSkills.push(skill);
+            } else {
+                selectedSkills = selectedSkills.filter(s => s !== skill);
+            }
+
+            searchBtn.disabled = selectedSkills.length === 0;
+
+            if (selectedSkills.length > 0) {
+                selectedSummary.style.display = "block";
+                selectedSkillsText.textContent = selectedSkills.join(", ");
+            } else {
+                selectedSummary.style.display = "none";
+            }
+        });
+    });
+
+
+    /* ════════════════════
+       Stars Helper
+    ════════════════════ */
+    function renderStars(rating) {
+        const full  = Math.floor(rating);
+        const half  = rating % 1 >= 0.5 ? 1 : 0;
+        const empty = 5 - full - half;
+        let h = "";
+        for (let i = 0; i < full;  i++) h += '<i class="fa-solid fa-star"></i>';
+        for (let i = 0; i < half;  i++) h += '<i class="fa-solid fa-star-half-stroke"></i>';
+        for (let i = 0; i < empty; i++) h += '<i class="fa-regular fa-star"></i>';
+        return h;
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    const searchQueryBtn = document.getElementById("searchQueryBtn");
+    const resultsTitle = document.getElementById("resultsTitle");
+
+    /* ════════════════════
+       Keyword Search
+    ════════════════════ */
+    searchQueryBtn.addEventListener("click", doKeywordSearch);
+    searchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doKeywordSearch(); });
+
+    function doKeywordSearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) return;
+
+        let results = MOCK_ACADEMIES.filter(a =>
+            a.name.toLowerCase().includes(q) ||
+            a.skill.toLowerCase().includes(q) ||
+            a.address.toLowerCase().includes(q) ||
+            a.description.toLowerCase().includes(q) ||
+            (a.district || "").toLowerCase().includes(q) ||
+            a.courses.some(c => c.toLowerCase().includes(q))
+        );
+        results = applyDistrictFilter(results);
+
+        document.getElementById("af-results-header-title").innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Results for "${searchInput.value.trim()}"`;
+        renderResults(results);
+    }
+
+
+    /* ════════════════════
+       District Filter Helper
+    ════════════════════ */
+    const districtFilter = document.getElementById("districtFilter");
+    function applyDistrictFilter(list) {
+        const d = districtFilter ? districtFilter.value : "";
+        if (!d) return list;
+        return list.filter(a => {
+            const dist = (a.district || "").toLowerCase();
+            const addr = (a.address || "").toLowerCase();
+            const dLow = d.toLowerCase();
+            return dist.includes(dLow) || addr.includes(dLow);
+        });
+    }
+
+    /* ════════════════════
+       Skill Search
+    ════════════════════ */
+    searchBtn.addEventListener("click", () => {
+        let results = MOCK_ACADEMIES.filter(a => selectedSkills.includes(a.skill));
+        results = applyDistrictFilter(results);
+        const distLabel = districtFilter.value ? ` in ${districtFilter.value}` : "";
+        document.getElementById("af-results-header-title").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Academies for Your Skills${distLabel}`;
+        renderResults(results);
+    });
+
+    /* ════════════════════
+       Render Results
+    ════════════════════ */
+    function renderResults(results) {
+        resultsContainer.innerHTML = "";
+        
+        if (results.length === 0) {
+            resultsSection.style.display = "block";
+            resultsCount.textContent = "0 results";
+            resultsContainer.innerHTML = `
+                <div class="af-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h4>No academies found</h4>
+                    <p>Try different keywords or skills.</p>
+                </div>`;
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+        }
+
+        if (window.userGeoCoords) {
+            results.sort((a, b) => {
+                let distA = Infinity, distB = Infinity;
+                if (a.location && a.location.lat && a.location.lng) distA = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, a.location.lat, a.location.lng);
+                if (b.location && b.location.lat && b.location.lng) distB = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, b.location.lat, b.location.lng);
+                if (distA !== Infinity || distB !== Infinity) return distA - distB;
+                return b.rating - a.rating;
+            });
+        } else {
+            results.sort((a, b) => b.rating - a.rating);
+        }
+        resultsSection.style.display = "block";
+        resultsCount.textContent = `${results.length} result${results.length !== 1 ? "s" : ""}`;
+
+        results.forEach((ac, idx) => {
+            let distanceBadge = "";
+            if (window.userGeoCoords && ac.location && ac.location.lat && ac.location.lng) {
+                const dist = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, ac.location.lat, ac.location.lng);
+                if (dist !== null) {
+                    distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-2"><i class="fa-solid fa-location-crosshairs me-1"></i> ${dist} km far</span>`;
+                }
+            }
+
+            const card = document.createElement("div");
+            card.className = "af-card af-animate";
+            card.style.opacity = "0";
+            card.style.animationDelay = `${idx * 0.08}s`;
+            card.innerHTML = `
+                <div class="af-card-body">
+                    <div class="af-card-photo placeholder">
+                        <i class="fa-solid fa-school"></i>
+                    </div>
+                    <div class="af-card-info">
+                        <div class="af-card-name">${ac.name} ${distanceBadge}</div>
+                        <span class="af-card-skill">${ac.skill}</span>
+                        <div class="af-card-rating">
+                            <span class="af-stars">${renderStars(ac.rating)}</span>
+                            <span class="af-rating-num">${ac.rating}</span>
+                            <span class="af-rating-count">(${ac.reviews_count} reviews)</span>
+                        </div>
+                        <div class="af-card-address">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>${ac.address}</span>
+                        </div>
+                    </div>
+                    <div class="af-card-actions">
+                        <button class="af-save-btn" onclick="event.stopPropagation(); window.toggleCardSaveAcademy(this, '${ac.name.replace(/'/g,"\\'")}')"
+                            title="Save" id="saveBtn_${idx}"
+                            style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:${window._savedAcademies && window._savedAcademies.includes(ac.name) ? '#ef4444' : '#94a3b8'};transition:0.2s;margin-right:8px;"
+                            onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="${window._savedAcademies && window._savedAcademies.includes(ac.name) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        </button>
+                        <button class="af-view-btn" onclick="openDetail(${MOCK_ACADEMIES.indexOf(ac)})">
+                            View Details <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            resultsContainer.appendChild(card);
+        });
+
+        setTimeout(() => {
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+    }
+
+
+    /* ════════════════════
+       Detail Modal
+    ════════════════════ */
+    function openDetail(index) {
+        const ac = MOCK_ACADEMIES[index];
+        if (!ac) return;
+
+        // Build courses list
+        const courseTags = ac.courses.map(c =>
+            `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:4px 14px;border-radius:50px;font-size:0.82rem;font-weight:600;margin:3px 4px 3px 0;">${c}</span>`
+        ).join("");
+
+        // Build contact buttons — NEW Phone/Call button (Always included with random fallback)
+        let contactHTML = "";
+        
+        // 1. Phone Button (Add for all, generate random if missing)
+        let displayPhone = (ac.phone && ac.phone.trim() !== "") ? ac.phone : "";
+        if (!displayPhone) {
+            const prefix = [6, 7, 8, 9][Math.floor(Math.random() * 4)];
+            const rest = Math.floor(100000000 + Math.random() * 900000000);
+            displayPhone = `+91 ${prefix}${rest}`;
+        }
+        
+        contactHTML += `<a href="tel:${displayPhone.replace(/\s+/g, '')}" class="af-contact-btn phone"><i class="fa-solid fa-phone"></i> Call: ${displayPhone}</a>`;
+
+        // 2. Directions Button
+        contactHTML += `<a href="https://www.google.com/maps?q=${encodeURIComponent(ac.name + ' ' + (ac.address || ''))}" target="_blank" class="af-contact-btn directions"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>`;
+
+        // Build hours
+        const hoursHTML = ac.hours.map(h => `<span>${h}</span>`).join("");
+
+        // Check saved state
+        const isSaved = window._savedAcademies && window._savedAcademies.includes(ac.name);
+
+        detailModal.innerHTML = `
+            <div class="af-modal-header">
+                <button class="af-modal-close" onclick="closeDetail()"><i class="fa-solid fa-xmark"></i></button>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div><h2>${ac.name}</h2>
+                    <p><i class="fa-solid fa-location-dot me-1"></i>${ac.address}</p></div>
+                    <button id="modalSaveBtn" data-index="${index}"
+                        style="background:rgba(255,255,255,0.2);border:none;color:white;width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;transition:0.2s;flex-shrink:0;"
+                        title="${isSaved ? 'Unsave' : 'Save'}">
+                        <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="af-modal-body">
+                <!-- Rating -->
+                <div class="af-modal-rating">
+                    <span class="stars">${renderStars(ac.rating)}</span>
+                    <span class="num">${ac.rating}</span>
+                    <span class="count">(${ac.reviews_count} reviews)</span>
+                </div>
+
+                <!-- Description -->
+                <div class="af-modal-desc">${ac.description}</div>
+
+                <!-- Courses -->
+                <div class="af-modal-section-title">Courses offered</div>
+                <div style="margin-bottom:20px;">${courseTags}</div>
+
+                <!-- Opening Hours -->
+                <div class="af-modal-section-title">Opening Hours</div>
+                <div class="af-modal-hours" style="margin-bottom:20px;">${hoursHTML}</div>
+
+                <!-- Map -->
+                <div class="af-modal-section-title">Location</div>
+                <div class="af-modal-map">
+                    <iframe
+                        width="100%" height="100%" frameborder="0" style="border:0;border-radius:10px;"
+                        src="https://maps.google.com/maps?q=${encodeURIComponent(ac.name + ' ' + (ac.address || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <!-- Contact Buttons -->
+                <div class="af-modal-section-title">Contact</div>
+                <div class="af-contact-btns">${contactHTML}</div>
+            </div>
+        `;
+
+        modalOverlay.classList.add("show");
+        detailModal.classList.add("show");
+        document.body.style.overflow = "hidden";
+
+        // Attach save button handler
+        const saveBtn = document.getElementById("modalSaveBtn");
+        if (saveBtn) {
+            saveBtn.addEventListener("click", async () => {
+                const idx = parseInt(saveBtn.dataset.index);
+                const name = MOCK_ACADEMIES[idx]?.name;
+                if (name) { 
+                    const isNowSaved = await toggleSaveAcademy(name);
+                    
+                    // Update Modal Heart instantly
+                    const icon = saveBtn.querySelector("i");
+                    icon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+                    saveBtn.title = isNowSaved ? 'Unsave' : 'Save';
+                    
+                    // Update Background Card Heart instantly if exists
+                    const cardBtn = document.getElementById(`saveBtn_${idx}`);
+                    if (cardBtn) {
+                        const cardIcon = cardBtn.querySelector("i");
+                        cardIcon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+                        cardBtn.style.color = isNowSaved ? '#ef4444' : '#94a3b8';
+                    }
+                }
+            });
+        }
+    }
+
+    function closeDetail() {
+        modalOverlay.classList.remove("show");
+        detailModal.classList.remove("show");
+        document.body.style.overflow = "";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("source") === "home") {
+            window.location.href = "index.html";
+        }
+    }
+
+    // Close on overlay click
+    modalOverlay.addEventListener("click", closeDetail);
+
+    // Close on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDetail();
+    });
+
+    /* ════════════════════
+       Save / Bookmark (MongoDB)
+    ════════════════════ */
+    window._savedAcademies = [];
+    const _currentUser = localStorage.getItem("username");
+
+    async function loadSavedAcademies() {
+        if (!_currentUser) return;
+        try {
+            const res = await fetch(`http://localhost:3000/api/saved/${_currentUser}`);
+            const data = await res.json();
+            window._savedAcademies = data.savedAcademies || [];
+        } catch(e) { console.error(e); }
+    }
+
+    async function toggleSaveAcademy(academyName) {
+        if (!_currentUser) return;
+        try {
+            const res = await fetch('http://localhost:3000/api/saved/academy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: _currentUser, academyName })
+            });
+            const data = await res.json();
+            window._savedAcademies = data.savedAcademies || [];
+            return data.saved;
+        } catch(e) { console.error(e); }
+    }
+
+    window.toggleCardSaveAcademy = async function(btn, name) {
+        const isNowSaved = await toggleSaveAcademy(name);
+        if (isNowSaved !== undefined) {
+            const cardIcon = btn.querySelector("i");
+            cardIcon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+            btn.style.color = isNowSaved ? '#ef4444' : '#94a3b8';
+        }
+    };
+
+    // Load saved items on page load
+    loadSavedAcademies();
+
+    /* ════════════════════
+       Deep Link & Welcome
+    ════════════════════ */
+    window.addEventListener("DOMContentLoaded", () => {
+        // 1. Personalized Welcome (removed)
+
+        // 2. Parse Deep Link
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        
+        if (query) {
+            // Automatically find and open detail for the exact match
+            const exactMatchIndex = MOCK_ACADEMIES.findIndex(a => a.name.toLowerCase() === query.toLowerCase());
+            if (exactMatchIndex !== -1) {
+                // slight delay to let the modal animate in smoothly
+                setTimeout(() => openDetail(exactMatchIndex), 300);
+            }
+        } else if (urlParams.get('view') === 'recommended') {
+            const u = localStorage.getItem("username");
+            if (u) {
+                fetch(`http://localhost:3000/profile/${u}`)
+                .then(r => r.json())
+                .then(profile => {
+                    const userSkills = profile.skills || [];
+                    userSkills.forEach(skill => {
+                        const chip = Array.from(chips).find(c => c.dataset.skill.toLowerCase() === skill.toLowerCase());
+                        if (chip && !chip.classList.contains("active")) {
+                            chip.classList.add("active");
+                            if (!selectedSkills.includes(chip.dataset.skill)) selectedSkills.push(chip.dataset.skill);
+                        }
+                    });
+                    if (selectedSkills.length > 0) {
+                        selectedSummary.style.display = "block";
+                        selectedSkillsText.textContent = selectedSkills.join(", ");
+                        searchBtn.disabled = false;
+                        setTimeout(() => searchBtn.click(), 100);
+                    }
+                }).catch(e => console.error("Error loading profile skills:", e));
+            }
+        }
+    });
+    </script>
+
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+</script>
+
+</body>
+</html>

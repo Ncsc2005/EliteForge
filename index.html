@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EliteForge — Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero {
+            background-image: url('https://t3.ftcdn.net/jpg/06/35/47/44/360_F_635474412_EIVHNEttUFaIlnpjqrZOsDRn1mHM3T8P.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .hero h1, .hero p, .hero .hero-buttons, .hero .search-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 20px; }
+
+        /* Recommendations Section */
+        .recommendations {
+            padding: 50px 0;
+            background: #f8fafc;
+        }
+
+        .recommendations .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .rec-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0a1229;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rec-header h2 i { color: #2563eb; }
+
+        .view-all-link {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+
+        .view-all-link:hover { color: #1e40af; gap: 8px; }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+    .rec-card {
+        background: white; border-radius: 16px; padding: 24px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        transition: all 0.3s ease; border: 1px solid #e2e8f0;
+        height: 100%; display: flex; flex-direction: column;
+    }
+    .rec-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        border-color: #2563eb;
+    }
+    .rec-card .card-skill {
+        display: inline-block; background: #e0e7ff; color: #3730a3;
+        padding: 4px 12px; border-radius: 50px; font-size: 0.75rem;
+        font-weight: 600; margin-bottom: 10px;
+    }
+
+        .rec-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0a1229;
+            margin-bottom: 8px;
+        }
+
+        .rec-card .card-meta {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .rec-card .card-meta i { color: #2563eb; width: 16px; }
+
+        .rec-card .card-rating {
+            color: #f59e0b;
+            font-size: 0.85rem;
+        }
+
+        .rec-card .card-rating span { color: #334155; font-weight: 700; margin-left: 4px; }
+
+        .rec-card .card-prize {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .rec-card .card-date {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .no-rec {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .no-rec i { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+        /* Search Results Section */
+        .search-results {
+            padding: 40px 0;
+            display: none;
+        }
+
+        .search-results .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        .search-results h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0a1229;
+            margin-bottom: 20px;
+        }
+
+        .dropdown-item:active, .dropdown-item.active {
+            background-color: #0a1229 !important;
+            color: white !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: #0a1229;
+            color: white;
+        }
+
+        /* Welcome Header */
+        .welcome-header {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #facc15;
+            margin-bottom: 8px;
+            animation: slideDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, float3 6s ease-in-out infinite alternate;
+            text-shadow: 0 4px 16px rgba(250, 204, 21, 0.4);
+            cursor: default;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float3 {
+            from { transform: translateY(0); }
+            to { transform: translateY(-8px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.6rem; }
+            .rec-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Auth Guard -->
+    <script>
+    (function() {
+        const user = localStorage.getItem("username");
+        if (!user) { window.location.href = "landing_page.html"; return; }
+        fetch(`http://localhost:3000/api/checkProfile/${user}`)
+            .then(r => r.json())
+            .then(d => { if (!d.profileCompleted) window.location.href = "profile.html"; })
+            .catch(() => {});
+    })();
+    </script>
+
+    <div>
+        <!-- Navbar -->
+        <nav class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+
+            <a href="index.html" class="d-flex align-items-center text-decoration-none">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+                    alt="logo" style="height:40px; width:40px; border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+                <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+            </a>
+
+            <ul class="nav-links mb-0 pe-4">
+                <li><a href="index.html" style="color: #facc15;"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li><a href="academy_finder.html"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+                <li><a href="competition_tracker.html"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+                <li><a href="deadline.html"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+            </ul>
+
+            <div class="dropdown">
+                <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                    <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsername">Profile</span>
+                </div>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+                    <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+                    <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div id="welcomeHeaderContainer"></div>
+            <div class="container">
+                <h1>Turn Ambition into Action</h1>
+                <p>Your personalized hub for academies, mentors, and challenges.</p>
+            </div>
+        </section>
+
+        <!-- Search Results (hidden by default) -->
+        <section class="search-results" id="searchResultsSection" style="display:none;">
+            <div class="container">
+                <div class="rec-header">
+                    <h3 id="searchResultsTitle"><i class="fa-solid fa-magnifying-glass"></i> Search Results</h3>
+                    <button id="clearSearchBtn" style="background:none;border:1px solid #e2e8f0;padding:8px 16px;border-radius:50px;font-size:0.85rem;cursor:pointer;color:#64748b;font-weight:600;">Clear Search</button>
+                </div>
+                <div class="rec-grid" id="searchResultsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Recommended Academies -->
+        <section class="recommendations" id="recAcademiesSection" style="display:none;">
+            <div class="container">
+                <div class="rec-header">
+                    <h2><i class="fa-solid fa-compass"></i> Recommended Academies</h2>
+                    <a href="academy_finder.html?view=recommended" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="rec-grid" id="recAcademiesGrid"></div>
+            </div>
+        </section>
+
+        <!-- Recommended Competitions -->
+        <section class="recommendations" id="recCompetitionsSection" style="display:none; background: white;">
+            <div class="container">
+                <div class="rec-header">
+                    <h2><i class="fa-solid fa-trophy"></i> Recommended Competitions</h2>
+                    <a href="competition_tracker.html?view=recommended" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="rec-grid" id="recCompetitionsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section class="solution pb-0 reveal">
+            <h2 class="mb-5 reveal">Our Smart Solution</h2>
+            <div class="features">
+                <div class="feature-card reveal" style="transition-delay: 0.1s;">
+                    <img src="https://img.freepik.com/free-photo/front-view-academic-cap-with-books-pencils_23-2148756619.jpg?semt=ais_user_personalization&w=740&q=80"
+                        alt="" class="h-60 w-75 pb-4">
+                    <h3>Academy Finder</h3>
+                    <p>Search academies by location, skill level, age group, fees, and ratings.</p>
+                </div>
+
+                <div class="feature-card reveal" style="transition-delay: 0.2s;">
+                    <img src="https://thumbs.dreamstime.com/b/competitors-aiming-same-goal-12568279.jpg" alt=""
+                        class="h-60 w-75">
+                    <h3>Competition Tracker</h3>
+                    <p>Track hackathons, sports events, quizzes, cultural competitions and more.</p>
+                </div>
+
+
+
+                <div class="feature-card reveal" style="transition-delay: 0.4s;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2693/2693507.png" alt="" class="h-50" style="width:120px; padding-bottom:16px;">
+                    <h3>Deadline Alerts</h3>
+                    <p>Get reminders before registration deadlines so you never miss an opportunity.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- National Importance Section -->
+        <section class="national reveal">
+            <h2 class="mb-4 reveal">Why This Matters for India</h2>
+            <ul class="reveal" style="transition-delay: 0.2s;">
+                <li>✔ Discover hidden talent</li>
+                <li>✔ Boost innovation & startups</li>
+                <li>✔ Build a skilled workforce</li>
+                <li>✔ Support holistic education & NEP goals</li>
+            </ul>
+        </section>
+
+        <!-- Call To Action -->
+        <section class="cta reveal">
+            <h2 style="position:relative; z-index:1;">Start Exploring Today</h2>
+            <div class="mt-4" style="position:relative; z-index:1; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                <a href="academy_finder.html" style="display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg, #facc15, #f59e0b); color:#0a1229; text-decoration:none; border-radius:50px; padding:14px 36px; font-weight:700; font-size:1rem; transition:all 0.3s ease; box-shadow:0 4px 16px rgba(250,204,21,0.4); border:none;" onmouseover="this.style.transform='translateY(-3px) scale(1.03)'; this.style.boxShadow='0 8px 28px rgba(250,204,21,0.5)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 16px rgba(250,204,21,0.4)';">
+                    <i class="fa-solid fa-compass"></i> Find Academies
+                </a>
+                <a href="competition_tracker.html" style="display:inline-flex; align-items:center; gap:10px; background:rgba(255,255,255,0.15); color:white; text-decoration:none; border:2px solid rgba(255,255,255,0.4); border-radius:50px; padding:14px 36px; font-weight:700; font-size:1rem; transition:all 0.3s ease; backdrop-filter:blur(4px);" onmouseover="this.style.transform='translateY(-3px) scale(1.03)'; this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.6)'; this.style.boxShadow='0 8px 28px rgba(255,255,255,0.15)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.4)'; this.style.boxShadow='none';">
+                    <i class="fa-solid fa-trophy"></i> Explore Competitions
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 EliteForge | Empowering India's Talent</p>
+        </footer>
+    </div>
+
+    <!-- ═════════════════ Recommendation Modal ═════════════════ -->
+    <div class="modal fade" id="recModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                <div class="modal-header" style="background: linear-gradient(135deg, #0a1229, #1e3a8a); color: white; border-bottom: none; padding: 24px;">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-2" id="recModalType"></span>
+                        <h4 class="modal-title fw-bold" id="recModalTitle" style="margin: 0;"></h4>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-light" id="recModalBody">
+                    <!-- Dynamic Content goes here -->
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 24px; background: white;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
+                    <a href="#" id="recModalAction" class="btn btn-primary" style="border-radius: 8px; background: #2563eb; border: none; padding: 8px 24px;">View Full Details <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- External Academy Data -->
+    <script src="data_academies_technical.js"></script>
+    <script src="data_academies_creative.js"></script>
+    <script src="data_academies_sports_fitness.js"></script>
+    <script src="data_academies_legacy.js"></script>
+
+    <!-- External Competition Data -->
+    <script src="data_competitions_main.js"></script>
+
+    <script>
+    /* ═══════════════════════════════════════════
+       MOCK DATA (same as academy_finder & competition_tracker)
+    ═══════════════════════════════════════════ */
+
+
+    /* ═══════════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════════ */
+    const currentUser = localStorage.getItem("username");
+
+    function logout() {
+        localStorage.removeItem("username");
+        window.location.href = "landing_page.html";
+    }
+
+    function renderStars(rating) {
+        const full = Math.floor(rating);
+        const half = rating % 1 >= 0.5 ? 1 : 0;
+        const empty = 5 - full - half;
+        let h = "";
+        for (let i = 0; i < full; i++) h += '<i class="fa-solid fa-star"></i>';
+        for (let i = 0; i < half; i++) h += '<i class="fa-solid fa-star-half-stroke"></i>';
+        for (let i = 0; i < empty; i++) h += '<i class="fa-regular fa-star"></i>';
+        return h;
+    }
+
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    const LOCATION_ALIASES = {
+        "vizag": ["visakhapatnam", "vizag", "vishakapatnam", "vishakhapatnam"],
+        "visakhapatnam": ["visakhapatnam", "vizag", "vishakapatnam", "vishakhapatnam"],
+        "vijayawada": ["vijayawada", "bezawada"],
+        "guntur": ["guntur"],
+        "nellore": ["nellore"],
+        "tirupati": ["tirupati", "tirumala"],
+        "kurnool": ["kurnool"],
+        "anantapur": ["anantapur", "anantapuramu", "anantapuram"],
+        "anantapuramu": ["anantapur", "anantapuramu", "anantapuram"],
+        "kadapa": ["kadapa", "cuddapah", "ysr kadapa", "ysr"],
+        "ysr kadapa": ["kadapa", "cuddapah", "ysr kadapa", "ysr"],
+        "rajahmundry": ["rajahmundry", "rajamahendravaram", "east godavari"],
+        "east godavari": ["rajahmundry", "rajamahendravaram", "east godavari", "kakinada"],
+        "kakinada": ["kakinada", "east godavari"],
+        "eluru": ["eluru", "west godavari"],
+        "srikakulam": ["srikakulam"],
+        "vizianagaram": ["vizianagaram"],
+        "chittoor": ["chittoor", "chitoor"],
+        "ongole": ["ongole", "prakasam"],
+        "prakasam": ["ongole", "prakasam"],
+        "hyderabad": ["hyderabad", "secunderabad", "telangana"],
+        "chennai": ["chennai", "madras"],
+        "bangalore": ["bangalore", "bengaluru"],
+        "bengaluru": ["bangalore", "bengaluru"],
+    };
+
+    const CITY_COORDS = {
+        "visakhapatnam": {lat: 17.6868, lng: 83.2185},
+        "vizag": {lat: 17.6868, lng: 83.2185},
+        "vijayawada": {lat: 16.5062, lng: 80.6480},
+        "guntur": {lat: 16.3067, lng: 80.4365},
+        "nellore": {lat: 14.4426, lng: 79.9865},
+        "tirupati": {lat: 13.6288, lng: 79.4192},
+        "kurnool": {lat: 15.8281, lng: 78.0373},
+        "anantapur": {lat: 14.6819, lng: 77.6006},
+        "anantapuramu": {lat: 14.6819, lng: 77.6006},
+        "kadapa": {lat: 14.4673, lng: 78.8242},
+        "ysr kadapa": {lat: 14.4673, lng: 78.8242},
+        "rajahmundry": {lat: 17.0005, lng: 81.8040},
+        "east godavari": {lat: 17.0005, lng: 81.8040},
+        "kakinada": {lat: 16.9891, lng: 82.2475},
+        "eluru": {lat: 16.7107, lng: 81.1031},
+        "srikakulam": {lat: 18.2949, lng: 83.8938},
+        "vizianagaram": {lat: 18.1130, lng: 83.3977},
+        "chittoor": {lat: 13.2172, lng: 79.1003},
+        "ongole": {lat: 15.5057, lng: 80.0499},
+        "prakasam": {lat: 15.5057, lng: 80.0499},
+        "hyderabad": {lat: 17.3850, lng: 78.4867},
+        "chennai": {lat: 13.0827, lng: 80.2707},
+        "bangalore": {lat: 12.9716, lng: 77.5946},
+        "bengaluru": {lat: 12.9716, lng: 77.5946}
+    };
+
+    function locationMatches(userLoc, itemLoc) {
+        if (!userLoc || !itemLoc) return false;
+        const u = userLoc.toLowerCase().trim();
+        const t = itemLoc.toLowerCase().trim();
+
+        if (t.includes(u) || u.includes(t)) return true;
+
+        const userAliases = LOCATION_ALIASES[u] || [u];
+        for (const alias of userAliases) {
+            if (t.includes(alias)) return true;
+        }
+
+        const words = u.split(/[\s,]+/);
+        for (const word of words) {
+            if (word.length > 3 && t.includes(word)) return true;
+            const wordAliases = LOCATION_ALIASES[word] || [];
+            for (const wa of wordAliases) {
+                if (t.includes(wa)) return true;
+            }
+        }
+        return false;
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+        const R = 6371; // Radius of the earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        const d = R * c; // Distance in km
+        return parseFloat(d.toFixed(1));
+    }
+
+    function renderAcademyCard(ac, index, userLocation) {
+        let distanceBadge = "";
+        let isLocal = locationMatches(userLocation, (ac.address || "") + " " + (ac.district || ""));
+        
+        if (window.userGeoCoords && ac.location && ac.location.lat && ac.location.lng) {
+            const dist = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, ac.location.lat, ac.location.lng);
+            if (dist !== null && dist < 50) {
+                distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> ${dist} km far</span>`;
+            } else if (dist !== null) {
+                distanceBadge = `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill"><i class="fa-solid fa-road me-1"></i> ${dist} km far</span>`;
+            } else if (isLocal) {
+                distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> Near You</span>`;
+            }
+        } else if (isLocal) {
+            distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> Near You</span>`;
+        }
+
+        return `
+        <div class="col">
+            <div class="card h-100 rec-card border-0 shadow-sm" onclick="window.location.href='academy_finder.html?q=${encodeURIComponent(ac.name)}'" style="cursor:pointer;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">${ac.skill}</span>
+                        <div class="text-warning small">${renderStars(ac.rating)}</div>
+                    </div>
+                    <h5 class="fw-bold mb-2">${ac.name}</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot me-1"></i> ${ac.address}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-auto">
+                        <span class="text-muted small">${ac.reviews_count} Reviews</span>
+                        ${distanceBadge}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderCompetitionCard(comp, index, userLocation) {
+        let distanceBadge = "";
+        let isLocal = locationMatches(userLocation, (comp.location || "") + " " + (comp.venue || ""));
+        
+        if (window.userGeoCoords && comp.coords && comp.coords.lat && comp.coords.lng) {
+            const dist = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, comp.coords.lat, comp.coords.lng);
+            if (dist !== null && dist < 50) {
+                distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> ${dist} km far</span>`;
+            } else if (dist !== null) {
+                distanceBadge = `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill"><i class="fa-solid fa-road me-1"></i> ${dist} km far</span>`;
+            } else if (isLocal) {
+                distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> Local</span>`;
+            }
+        } else if (isLocal) {
+            distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="fa-solid fa-location-crosshairs me-1"></i> Local</span>`;
+        }
+
+        return `
+        <div class="col">
+            <div class="card h-100 rec-card border-0 shadow-sm" onclick="window.location.href='competition_tracker.html?q=${encodeURIComponent(comp.name)}'" style="cursor:pointer;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">${comp.skill}</span>
+                        <span class="text-success fw-bold">${comp.prize}</span>
+                    </div>
+                    <h5 class="fw-bold mb-2">${comp.name}</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot me-1"></i> ${comp.location}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-auto">
+                        <span class="text-danger small fw-semibold"><i class="fa-solid fa-calendar me-1"></i> ${formatDate(comp.date)}</span>
+                        ${distanceBadge}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    /* ═══════════════════════════════════════════
+       MODAL LOGIC
+    ═══════════════════════════════════════════ */
+    let currentRecAcademies = [];
+    let currentRecCompetitions = [];
+    let theRecModal = null;
+
+    function openAcademyModal(index) {
+        const ac = currentRecAcademies[index];
+        if(!ac) return;
+
+        document.getElementById('recModalType').innerHTML = `<i class="fa-solid fa-compass me-1"></i> Academy`;
+        document.getElementById('recModalTitle').textContent = ac.name;
+
+        document.getElementById('recModalBody').innerHTML = `
+            <div class="d-flex align-items-center mb-3">
+                <div style="width:50px; height:50px; background:#e0e7ff; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#4f46e5; font-size:1.5rem; margin-right:15px;">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-muted">Core Skill Focus</h6>
+                    <h5 class="mb-0 fw-bold text-dark">${ac.skill}</h5>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="p-3 bg-white rounded shadow-sm border">
+                        <p class="mb-1 text-muted small"><i class="fa-solid fa-location-dot me-1"></i> Location</p>
+                        <p class="mb-0 fw-semibold">${ac.address}</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 bg-white rounded shadow-sm border text-center">
+                        <p class="mb-1 text-muted small">Rating</p>
+                        <div class="text-warning mb-1" style="font-size:0.9rem;">${renderStars(ac.rating)}</div>
+                        <p class="mb-0 fw-bold">${ac.rating} <span class="text-muted fw-normal" style="font-size:0.8rem">/5</span></p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 bg-white rounded shadow-sm border text-center">
+                        <p class="mb-1 text-muted small">Reviews</p>
+                        <h4 class="mb-0 fw-bold text-primary">${ac.reviews_count}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-info mt-3 mb-0" style="border-radius:12px;">
+                <i class="fa-solid fa-circle-info me-2"></i> This academy is highly recommended based on your profile skills!
+            </div>
+        `;
+
+        document.getElementById('recModalAction').style.display = 'inline-block';
+        document.getElementById('recModalAction').href = `academy_finder.html?q=${encodeURIComponent(ac.name)}&source=home`;
+        document.getElementById('recModalAction').innerHTML = 'Enquire Now <i class="fa-solid fa-arrow-right ms-1"></i>';
+
+        if(!theRecModal) theRecModal = new bootstrap.Modal(document.getElementById('recModal'));
+        theRecModal.show();
+    }
+
+    function openCompetitionModal(index) {
+        const comp = currentRecCompetitions[index];
+        if(!comp) return;
+
+        document.getElementById('recModalType').innerHTML = `<i class="fa-solid fa-trophy me-1"></i> Competition`;
+        document.getElementById('recModalType').className = "badge bg-danger text-white mb-2";
+        document.getElementById('recModalTitle').textContent = comp.name;
+
+        document.getElementById('recModalBody').innerHTML = `
+            <div class="d-flex align-items-center mb-3">
+                <div style="width:50px; height:50px; background:#fecaca; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:1.5rem; margin-right:15px;">
+                    <i class="fa-solid fa-medal"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-muted">Category</h6>
+                    <h5 class="mb-0 fw-bold text-dark">${comp.skill}</h5>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="p-3 bg-white rounded shadow-sm border d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-1 text-muted small"><i class="fa-solid fa-calendar me-1"></i> Event Date</p>
+                            <p class="mb-0 fw-bold text-danger">${formatDate(comp.date)}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-1 text-muted small"><i class="fa-solid fa-trophy me-1"></i> Prize Pool</p>
+                            <h5 class="mb-0 fw-bold text-success">${comp.prize}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 bg-white rounded shadow-sm border">
+                        <p class="mb-1 text-muted small"><i class="fa-solid fa-location-dot me-1"></i> Location / Venue</p>
+                        <p class="mb-0 fw-semibold">${comp.location}</p>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-3 text-center text-muted small mb-0">Don't miss out on this opportunity matching your skills!</p>
+        `;
+
+        document.getElementById('recModalAction').style.display = 'none';
+
+        if(!theRecModal) theRecModal = new bootstrap.Modal(document.getElementById('recModal'));
+        theRecModal.show();
+    }
+
+
+    /* ═══════════════════════════════════════════
+       LOAD PROFILE & BUILD RECOMMENDATIONS
+    ═══════════════════════════════════════════ */
+    async function loadRecommendations() {
+        if (!currentUser) return;
+
+        // Set username in navbar and huge Hero welcome text
+        document.getElementById("navUsername").textContent = currentUser;
+        document.getElementById("welcomeHeaderContainer").innerHTML = `<div class="welcome-header">Welcome back, ${currentUser}!</div>`;
+
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${currentUser}`);
+            const profile = await res.json();
+            const userSkills = profile.skills || [];
+            let userLocation = profile.location || "";
+
+            window.userGeoCoords = null;
+            if (userLocation) {
+                const standardizedCity = userLocation.trim().toLowerCase();
+                if (CITY_COORDS[standardizedCity]) {
+                    window.userGeoCoords = CITY_COORDS[standardizedCity];
+                }
+            }
+
+            const ALL_ACADEMIES = [
+                ...(typeof TECH_ACADEMIES !== 'undefined' ? TECH_ACADEMIES : []),
+                ...(typeof CREATIVE_ACADEMIES !== 'undefined' ? CREATIVE_ACADEMIES : []),
+                ...(typeof SPORTS_FITNESS_ACADEMIES !== 'undefined' ? SPORTS_FITNESS_ACADEMIES : []),
+                ...(typeof LEGACY_ACADEMIES !== 'undefined' ? LEGACY_ACADEMIES : [])
+            ];
+
+            if (userSkills.length === 0) {
+                // If no skills, clear sections and return
+                document.getElementById("recAcademiesSection").style.display = "none";
+                document.getElementById("recCompetitionsSection").style.display = "none";
+                return;
+            }
+
+            // Filter and sort academies by skills and location
+            let matchesA = ALL_ACADEMIES.filter(a => userSkills.some(s => s.toLowerCase() === a.skill.toLowerCase()));
+            matchesA.sort((a, b) => {
+                let distA = Infinity, distB = Infinity;
+                if (window.userGeoCoords) {
+                    if (a.location && a.location.lat && a.location.lng) distA = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, a.location.lat, a.location.lng);
+                    if (b.location && b.location.lat && b.location.lng) distB = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, b.location.lat, b.location.lng);
+                }
+                
+                // Sort heavily by exact distance if available
+                if (distA !== Infinity || distB !== Infinity) {
+                    return distA - distB;
+                }
+
+                const aLoc = locationMatches(userLocation, (a.address || "") + " " + (a.district || ""));
+                const bLoc = locationMatches(userLocation, (b.address || "") + " " + (b.district || ""));
+                if (aLoc && !bLoc) return -1;
+                if (!aLoc && bLoc) return 1;
+                return b.rating - a.rating;
+            });
+            currentRecAcademies = matchesA.slice(0, 4);
+
+            // Filter and sort competitions by skills and location
+            const ALL_COMPETITIONS = [
+                ...(typeof MOCK_COMPETITIONS !== 'undefined' ? MOCK_COMPETITIONS : []),
+                ...(typeof EXTRA_COMPETITIONS !== 'undefined' ? EXTRA_COMPETITIONS : [])
+            ];
+            
+            let matchesC = ALL_COMPETITIONS.filter(c => {
+                const compSkill = (c.skill || c.category || "").toLowerCase();
+                return userSkills.some(s => s.toLowerCase() === compSkill);
+            });
+            matchesC.sort((a, b) => {
+                let distA = Infinity, distB = Infinity;
+                if (window.userGeoCoords) {
+                    if (a.coords && a.coords.lat && a.coords.lng) distA = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, a.coords.lat, a.coords.lng);
+                    if (b.coords && b.coords.lat && b.coords.lng) distB = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, b.coords.lat, b.coords.lng);
+                }
+                
+                // Sort heavily by exact distance if available
+                if (distA !== Infinity || distB !== Infinity) {
+                    return distA - distB;
+                }
+
+                const aLoc = locationMatches(userLocation, (a.location || "") + " " + (a.venue || ""));
+                const bLoc = locationMatches(userLocation, (b.location || "") + " " + (b.venue || ""));
+                if (aLoc && !bLoc) return -1;
+                if (!aLoc && bLoc) return 1;
+                return new Date(a.date) - new Date(b.date);
+            });
+            currentRecCompetitions = matchesC.slice(0, 4);
+
+            // Render academies
+            if (currentRecAcademies.length > 0) {
+                document.getElementById("recAcademiesSection").style.display = "block";
+                document.getElementById("recAcademiesGrid").innerHTML = currentRecAcademies.map((ac, idx) => renderAcademyCard(ac, idx, userLocation)).join("");
+            }
+
+            // Render competitions
+            if (currentRecCompetitions.length > 0) {
+                document.getElementById("recCompetitionsSection").style.display = "block";
+                document.getElementById("recCompetitionsGrid").innerHTML = currentRecCompetitions.map((c, idx) => renderCompetitionCard(c, idx, userLocation)).join("");
+            }
+
+        } catch (err) {
+            console.error("Failed to load recommendations:", err);
+        }
+    }
+
+    loadRecommendations();
+
+
+
+
+
+    /* ═══════════════════════════════════════════
+       Scroll Reveal
+    ═══════════════════════════════════════════ */
+    document.addEventListener("DOMContentLoaded", function () {
+        const reveals = document.querySelectorAll(".reveal");
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 120;
+            reveals.forEach((reveal) => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add("active");
+                }
+            });
+        };
+        window.addEventListener("scroll", revealOnScroll);
+        revealOnScroll();
+    });
+    </script>
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+</script>
+
+</body>
+
+</html>

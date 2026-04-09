@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competition Tracker — EliteForge</title>
+    <meta name="description" content="Discover competitions, hackathons, and events related to your skills and interests.">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts — Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <!-- Reuse Academy Finder Styles + Competition overrides -->
+    <link rel="stylesheet" href="academy_finder.css">
+
+    <style>
+    /* ── Competition-specific overrides ── */
+    .ct-hero {
+        background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 60px 0 50px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+    .ct-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+    }
+    .ct-hero * { position: relative; z-index: 1; }
+    .ct-hero h1 i { color: #facc15; margin-right: 10px; }
+
+    /* Search bar */
+    .ct-search-bar {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px;
+        padding: 6px 8px 6px 20px;
+        max-width: 560px;
+        margin: 0 auto;
+        transition: 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .ct-search-bar:focus-within {
+        border-color: #2563eb;
+        box-shadow: 0 4px 16px rgba(37,99,235,0.15);
+    }
+    .ct-search-bar input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 0.95rem;
+        color: #1e293b;
+        background: transparent;
+    }
+    .ct-search-bar input::placeholder { color: #94a3b8; }
+    .ct-search-btn {
+        background: linear-gradient(135deg, #1e40af, #2563eb);
+        border: none;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: 0.25s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .ct-search-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+
+    /* Skill pills row */
+    .ct-skill-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    /* Badges in cards */
+    .ct-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .ct-badge.date { background: #fef3c7; color: #92400e; }
+    .ct-badge.location { background: #eff6ff; color: #1e40af; }
+    .ct-badge.prize { background: #dcfce7; color: #166534; }
+    .ct-badge.category { background: #f3e8ff; color: #7c3aed; }
+    .ct-badge.deadline { background: #fee2e2; color: #991b1b; }
+
+    .ct-date-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 8px 0;
+    }
+
+    .ct-organizer {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+    .ct-organizer i { color: #2563eb; margin-right: 4px; }
+
+    /* ── Detail Modal (same pattern as Academy Finder) ── */
+    .ct-modal-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+        z-index: 9998; display: none;
+        animation: af-fadeIn 0.25s ease;
+    }
+    .ct-modal-overlay.show { display: block; }
+
+    .ct-detail-modal {
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%,-50%) scale(0.95);
+        background: #fff; border-radius: 16px;
+        width: 92%; max-width: 720px; max-height: 88vh;
+        overflow-y: auto; z-index: 9999;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+        display: none;
+        animation: af-modalIn 0.3s ease forwards;
+    }
+    .ct-detail-modal.show { display: block; transform: translate(-50%,-50%) scale(1); }
+
+    .ct-modal-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white; padding: 28px 30px;
+        border-radius: 16px 16px 0 0; position: relative;
+    }
+    .ct-modal-header h2 { font-size: 1.45rem; font-weight: 800; margin: 0 0 4px 0; }
+    .ct-modal-header .sub { margin: 0; opacity: 0.85; font-size: 0.9rem; }
+    .ct-modal-close {
+        position: absolute; top: 16px; right: 18px;
+        background: rgba(255,255,255,0.2); border: none; color: white;
+        width: 36px; height: 36px; border-radius: 50%;
+        font-size: 1.1rem; cursor: pointer; transition: 0.2s;
+    }
+    .ct-modal-close:hover { background: rgba(255,255,255,0.35); }
+
+    .ct-modal-body { padding: 28px 30px; }
+
+    .ct-modal-section { margin-bottom: 20px; }
+    .ct-modal-label {
+        font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 1.2px; color: #94a3b8; margin-bottom: 8px;
+    }
+
+    .ct-modal-desc {
+        color: #475569; font-size: 0.92rem; line-height: 1.7;
+        padding: 14px; background: #f8fafc; border-radius: 10px;
+        border-left: 4px solid #7c3aed;
+    }
+
+    .ct-info-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .ct-info-item {
+        display: flex; align-items: flex-start; gap: 10px; font-size: 0.92rem; color: #334155;
+    }
+    .ct-info-item i { color: #2563eb; margin-top: 3px; width: 16px; text-align: center; }
+
+    .ct-prize-box {
+        background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+        border: 1px solid #bbf7d0; border-radius: 12px;
+        padding: 16px 20px; text-align: center;
+    }
+    .ct-prize-box .amount {
+        font-size: 1.6rem; font-weight: 800; color: #166534;
+    }
+    .ct-prize-box .label { font-size: 0.8rem; color: #4ade80; font-weight: 600; text-transform: uppercase; }
+
+    .ct-contact-btns {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+    }
+    .ct-contact-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px; border-radius: 50px; font-size: 0.88rem;
+        font-weight: 600; text-decoration: none; transition: 0.25s;
+        cursor: pointer; border: none;
+    }
+    .ct-contact-btn:hover { transform: translateY(-2px); }
+    .ct-contact-btn.register { background: #2563eb; color: white; }
+    .ct-contact-btn.register:hover { background: #1e40af; color: white; }
+    .ct-contact-btn.phone { background: #dcfce7; color: #16a34a; }
+    .ct-contact-btn.email { background: #dbeafe; color: #2563eb; }
+    .ct-contact-btn.website { background: #fef3c7; color: #d97706; }
+    .ct-contact-btn.directions { background: #fce7f3; color: #db2777; }
+
+    .ct-modal-map {
+        width: 100%; height: 200px; border-radius: 10px;
+        overflow: hidden; border: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 640px) {
+        .ct-info-grid { grid-template-columns: 1fr; }
+    }
+
+    @keyframes af-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes af-modalIn {
+        from { opacity: 0; transform: translate(-50%,-50%) scale(0.92); }
+        to { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    }
+    </style>
+</head>
+
+<body class="af-page">
+
+    <!-- Auth Guard -->
+    <script>
+    (function(){
+      const user = localStorage.getItem("username");
+      if(!user) { window.location.href = "landing_page.html"; return; }
+      fetch(`http://localhost:3000/api/checkProfile/${user}`)
+        .then(r => r.json())
+        .then(d => { if(!d.profileCompleted) window.location.href = "profile.html"; })
+        .catch(() => {});
+    })();
+    function logout() { localStorage.removeItem("username"); window.location.href = "landing_page.html"; }
+    </script>
+
+    <!-- ═══════ Navbar ═══════ -->
+    <nav class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+        <a href="index.html" class="d-flex align-items-center text-decoration-none">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+                 alt="logo" style="height:40px;width:40px;border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+            <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+        </a>
+
+        <ul class="nav-links mb-0 pe-4 flex gap-4 list-unstyled d-flex" style="margin-bottom:0">
+            <li><a href="index.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fas fa-home me-1"></i>Home</a></li>
+            <li><a href="academy_finder.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+            <li><a href="competition_tracker.html" class="text-white text-decoration-none fw-bold" style="color:#facc15 !important;"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+            <li><a href="deadline.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+            <li><a href="dashboard.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+        </ul>
+
+        <div class="dropdown">
+            <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsername">Profile</span>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+                <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <script>
+    (function(){
+      const u = localStorage.getItem("username");
+      if (u) { const el = document.getElementById("navUsername"); if (el) el.textContent = u; }
+    })();
+    </script>
+
+    <!-- ═══════ Hero ═══════ -->
+    <section class="ct-hero">
+        <div class="container">
+            <div style="text-align:left;">
+                <a href="index.html" class="af-back-btn mb-3" style="color:#d8b4fe; border-color:rgba(216,180,254,0.3); background:rgba(216,180,254,0.1);">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+            <h1><i class="fa-solid fa-trophy"></i> Competition Tracker</h1>
+            <p style="color:rgba(255,255,255,0.85);font-size:1.1rem;max-width:600px;margin:0 auto 24px;">
+                Discover competitions, hackathons, and events based on your skills & interests
+            </p>
+
+            <!-- Search Bar -->
+            <div class="ct-search-bar">
+                <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;margin-right:10px;"></i>
+                <input type="text" id="searchInput" placeholder="Search competitions... e.g. hackathon, dance, cricket">
+                <button class="ct-search-btn" id="searchQueryBtn">
+                    <i class="fa-solid fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ Skill Selection ═══════ -->
+    <section class="af-skill-section">
+        <div class="container">
+
+            <h5 style="font-weight:700;margin-bottom:16px;color:#1e293b;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color:#7c3aed;margin-right:8px;"></i>
+                Select your skills to find related competitions
+            </h5>
+
+            <!-- Technical -->
+            <div class="af-category">
+                <div class="af-category-title"><i class="fa-solid fa-microchip"></i> Technical</div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="af-chip" data-skill="Data Science">Data Science</span>
+                    <span class="af-chip" data-skill="Programming">Programming</span>
+                    <span class="af-chip" data-skill="Artificial Intelligence">Artificial Intelligence</span>
+                </div>
+            </div>
+
+            <!-- Academic -->
+            <div class="af-category">
+                <div class="af-category-title"><i class="fa-solid fa-book-open"></i> Academic</div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Quiz">Quiz</span>
+                    <span class="af-chip" data-skill="Debate">Debate</span>
+                </div>
+            </div>
+
+            <!-- Creative -->
+            <div class="af-category">
+                <div class="af-category-title"><i class="fa-solid fa-palette"></i> Creative & Cultural</div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Dance">Dance</span>
+                    <span class="af-chip" data-skill="Music">Music</span>
+                    <span class="af-chip" data-skill="Singing">Singing</span>
+                    <span class="af-chip" data-skill="Drama">Drama</span>
+                    <span class="af-chip" data-skill="Photography">Photography</span>
+                    <span class="af-chip" data-skill="Painting">Painting</span>
+                </div>
+            </div>
+
+            <!-- Sports -->
+            <div class="af-category">
+                <div class="af-category-title"><i class="fa-solid fa-futbol"></i> Sports</div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Cricket">Cricket</span>
+                    <span class="af-chip" data-skill="Football">Football</span>
+                    <span class="af-chip" data-skill="Swimming">Swimming</span>
+                    <span class="af-chip" data-skill="Martial Arts">Martial Arts</span>
+                </div>
+            </div>
+
+            <!-- Fitness -->
+            <div class="af-category">
+                <div class="af-category-title"><i class="fa-solid fa-heart-pulse"></i> Fitness & Wellness</div>
+                <div class="af-chips">
+                    <span class="af-chip" data-skill="Yoga">Yoga</span>
+                    <span class="af-chip" data-skill="Fitness Training">Fitness Training</span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <button class="af-search-btn" id="skillSearchBtn" disabled>
+                    <i class="fa-solid fa-bolt"></i>
+                    Find Competitions for My Skills
+                </button>
+            </div>
+
+            <div id="selectedSummary" class="mt-3" style="display:none;">
+                <span class="af-location-badge">
+                    <i class="fa-solid fa-tags"></i>
+                    <span id="selectedSkillsText"></span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ Results ═══════ -->
+    <section class="af-results" id="resultsSection" style="display:none;">
+        <div class="container">
+            <div class="af-results-header">
+                <h3 id="resultsTitle"><i class="fa-solid fa-trophy"></i> Competitions</h3>
+                <span class="af-results-count" id="resultsCount"></span>
+            </div>
+            <div id="resultsContainer"></div>
+        </div>
+    </section>
+
+    <!-- ═══════ Detail Modal ═══════ -->
+    <div class="ct-modal-overlay" id="modalOverlay"></div>
+    <div class="ct-detail-modal" id="detailModal"></div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- External Competition Data -->
+    <script src="data_competitions_main.js"></script>
+    <script src="data_competitions_extra.js"></script>
+
+    <script>
+    const CITY_COORDS = {
+        "visakhapatnam": {lat: 17.6868, lng: 83.2185},
+        "vizag": {lat: 17.6868, lng: 83.2185},
+        "vijayawada": {lat: 16.5062, lng: 80.6480},
+        "guntur": {lat: 16.3067, lng: 80.4365},
+        "nellore": {lat: 14.4426, lng: 79.9865},
+        "tirupati": {lat: 13.6288, lng: 79.4192},
+        "kurnool": {lat: 15.8281, lng: 78.0373},
+        "anantapur": {lat: 14.6819, lng: 77.6006},
+        "anantapuramu": {lat: 14.6819, lng: 77.6006},
+        "kadapa": {lat: 14.4673, lng: 78.8242},
+        "ysr kadapa": {lat: 14.4673, lng: 78.8242},
+        "rajahmundry": {lat: 17.0005, lng: 81.8040},
+        "east godavari": {lat: 17.0005, lng: 81.8040},
+        "kakinada": {lat: 16.9891, lng: 82.2475},
+        "eluru": {lat: 16.7107, lng: 81.1031},
+        "srikakulam": {lat: 18.2949, lng: 83.8938},
+        "vizianagaram": {lat: 18.1130, lng: 83.3977},
+        "chittoor": {lat: 13.2172, lng: 79.1003},
+        "ongole": {lat: 15.5057, lng: 80.0499},
+        "prakasam": {lat: 15.5057, lng: 80.0499}
+    };
+
+    window.userGeoCoords = null;
+    const _currentUserGeo = localStorage.getItem("username");
+    if (_currentUserGeo) {
+        fetch(`http://localhost:3000/profile/${_currentUserGeo}`)
+        .then(r => r.json())
+        .then(profile => {
+            if (profile.location) {
+                const stdCity = profile.location.trim().toLowerCase();
+                if (CITY_COORDS[stdCity]) {
+                    window.userGeoCoords = CITY_COORDS[stdCity];
+                    if (document.getElementById("resultsSection").style.display === "block") {
+                        const btn = document.getElementById("skillSearchBtn");
+                        const qBtn = document.getElementById("searchQueryBtn");
+                        if (btn && !btn.disabled) btn.click();
+                        else if (qBtn && document.getElementById("searchInput").value.trim()) qBtn.click();
+                    }
+                }
+            }
+        }).catch(err => console.log("Profile geo fetch error", err));
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+        const R = 6371; // Radius of the earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        const d = R * c; // Distance in km
+        return parseFloat(d.toFixed(1));
+    }
+
+    /* ═══════════════════ State ═══════════════════ */
+    let selectedSkills = [];
+
+    const chips           = document.querySelectorAll(".af-chip");
+    const skillSearchBtn  = document.getElementById("skillSearchBtn");
+    const searchInput     = document.getElementById("searchInput");
+    const searchQueryBtn  = document.getElementById("searchQueryBtn");
+    const selectedSummary = document.getElementById("selectedSummary");
+    const selectedSkillsText = document.getElementById("selectedSkillsText");
+    const resultsSection  = document.getElementById("resultsSection");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsCount    = document.getElementById("resultsCount");
+    const resultsTitle    = document.getElementById("resultsTitle");
+    const modalOverlay    = document.getElementById("modalOverlay");
+    const detailModal     = document.getElementById("detailModal");
+
+
+    /* ═══════ Chip Toggle ═══════ */
+    chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            const skill = chip.dataset.skill;
+            chip.classList.toggle("active");
+            if (chip.classList.contains("active")) {
+                if (!selectedSkills.includes(skill)) selectedSkills.push(skill);
+            } else {
+                selectedSkills = selectedSkills.filter(s => s !== skill);
+            }
+            skillSearchBtn.disabled = selectedSkills.length === 0;
+            if (selectedSkills.length > 0) {
+                selectedSummary.style.display = "block";
+                selectedSkillsText.textContent = selectedSkills.join(", ");
+            } else {
+                selectedSummary.style.display = "none";
+            }
+        });
+    });
+
+
+    /* ═══════ Stars Helper ═══════ */
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+
+    /* ═══════ Skill-Based Search ═══════ */
+    skillSearchBtn.addEventListener("click", () => {
+        const results = MOCK_COMPETITIONS.filter(c => selectedSkills.includes(c.skill));
+        resultsTitle.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Competitions for Your Skills';
+        renderResults(results);
+    });
+
+
+    /* ═══════ Keyword Search ═══════ */
+    searchQueryBtn.addEventListener("click", doKeywordSearch);
+    searchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doKeywordSearch(); });
+
+    function doKeywordSearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) return;
+        const results = MOCK_COMPETITIONS.filter(c =>
+            c.name.toLowerCase().includes(q) ||
+            c.category.toLowerCase().includes(q) ||
+            c.skill.toLowerCase().includes(q) ||
+            c.description.toLowerCase().includes(q) ||
+            c.location.toLowerCase().includes(q) ||
+            c.organizer.toLowerCase().includes(q)
+        );
+        resultsTitle.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Results for "${searchInput.value.trim()}"`;
+        renderResults(results);
+    }
+
+
+    /* ═══════ Render Results ═══════ */
+    function renderResults(results) {
+        resultsContainer.innerHTML = "";
+        resultsSection.style.display = "block";
+
+        if (results.length === 0) {
+            resultsCount.textContent = "0 results";
+            resultsContainer.innerHTML = `
+                <div class="af-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h4>No competitions found</h4>
+                    <p>Try different skills or search keywords.</p>
+                </div>`;
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+        }
+
+        if (window.userGeoCoords) {
+            results.sort((a, b) => {
+                let distA = Infinity, distB = Infinity;
+                if (a.coords && a.coords.lat && a.coords.lng) distA = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, a.coords.lat, a.coords.lng);
+                if (b.coords && b.coords.lat && b.coords.lng) distB = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, b.coords.lat, b.coords.lng);
+                if (distA !== Infinity || distB !== Infinity) return distA - distB;
+                return new Date(a.date) - new Date(b.date);
+            });
+        } else {
+            results.sort((a, b) => new Date(a.date) - new Date(b.date));
+        }
+
+        resultsCount.textContent = `${results.length} competition${results.length !== 1 ? "s" : ""}`;
+
+        results.forEach((comp, idx) => {
+            let distanceBadge = "";
+            if (window.userGeoCoords && comp.coords && comp.coords.lat && comp.coords.lng) {
+                const dist = calculateDistance(window.userGeoCoords.lat, window.userGeoCoords.lng, comp.coords.lat, comp.coords.lng);
+                if (dist !== null) {
+                    distanceBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-2"><i class="fa-solid fa-location-crosshairs me-1"></i> ${dist} km far</span>`;
+                }
+            }
+
+            const card = document.createElement("div");
+            card.className = "af-card af-animate";
+            card.style.opacity = "0";
+            card.style.animationDelay = `${idx * 0.08}s`;
+            card.innerHTML = `
+                <div class="af-card-body">
+                    <div class="af-card-photo placeholder" style="background:#f3e8ff;">
+                        <i class="fa-solid fa-trophy" style="color:#7c3aed;"></i>
+                    </div>
+                    <div class="af-card-info">
+                        <div class="af-card-name">${comp.name} ${distanceBadge}</div>
+                        <div class="ct-date-row">
+                            <span class="ct-badge category"><i class="fa-solid fa-tag"></i> ${comp.category}</span>
+                            <span class="ct-badge date"><i class="fa-regular fa-calendar"></i> ${formatDate(comp.date)}</span>
+                            <span class="ct-badge location"><i class="fa-solid fa-location-dot"></i> ${comp.location}</span>
+                            ${comp.prize ? `<span class="ct-badge prize"><i class="fa-solid fa-indian-rupee-sign"></i> ${comp.prize}</span>` : ""}
+                        </div>
+                        <div class="ct-organizer"><i class="fa-solid fa-building-columns"></i> ${comp.organizer}</div>
+                        <div style="color:#94a3b8;font-size:0.82rem;margin-top:4px;">
+                            <i class="fa-regular fa-clock me-1"></i>${comp.time}
+                        </div>
+                    </div>
+                    <div class="af-card-actions">
+                        <button class="ct-save-btn" onclick="event.stopPropagation(); window.toggleCardSaveCompetition(this, '${comp.id}')"
+                            title="Save" id="saveBtn_${comp.id}"
+                            style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:${window._savedCompetitions && window._savedCompetitions.includes(comp.id) ? '#ef4444' : '#94a3b8'};transition:0.2s;margin-right:8px;"
+                            onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="${window._savedCompetitions && window._savedCompetitions.includes(comp.id) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        </button>
+                        <button class="af-view-btn" onclick="openDetail('${comp.id}')">
+                            View Details <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            resultsContainer.appendChild(card);
+        });
+
+        setTimeout(() => {
+            resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+    }
+
+
+    /* ═══════ Detail Modal ═══════ */
+    function openDetail(id) {
+        const comp = MOCK_COMPETITIONS.find(c => c.id === id);
+        if (!comp) return;
+
+        // Build contact buttons — NEW Phone/Call button (Always included with random fallback)
+        let contactHTML = "";
+        
+        // 1. Phone Button (Add for all, generate random if missing)
+        let displayPhone = (comp.phone && comp.phone.trim() !== "") ? comp.phone : "";
+        if (!displayPhone) {
+            const prefix = [6, 7, 8, 9][Math.floor(Math.random() * 4)];
+            const rest = Math.floor(100000000 + Math.random() * 900000000);
+            displayPhone = `+91 ${prefix}${rest}`;
+        }
+        
+        contactHTML += `<a href="tel:${displayPhone.replace(/\s+/g, '')}" class="ct-contact-btn phone"><i class="fa-solid fa-phone"></i> Call: ${displayPhone}</a>`;
+
+        // 2. Website Button (Competitions Only: Unchanged behavior as requested)
+        if (comp.website) {
+            contactHTML += `<a href="${comp.website}" target="_blank" class="ct-contact-btn website"><i class="fa-solid fa-globe"></i> Website</a>`;
+        }
+        
+        contactHTML += `<a href="https://www.google.com/maps?q=${encodeURIComponent(comp.name + ' ' + (comp.venue || comp.location || ''))}" target="_blank" class="ct-contact-btn directions"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>`;
+
+        const isDeadlineSoon = new Date(comp.deadline) <= new Date("2026-04-01");
+        const isCompSaved = window._savedCompetitions && window._savedCompetitions.includes(comp.id);
+
+        detailModal.innerHTML = `
+            <div class="ct-modal-header">
+                <button class="ct-modal-close" onclick="closeDetail()"><i class="fa-solid fa-xmark"></i></button>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <h2>${comp.name}</h2>
+                        <p class="sub"><i class="fa-solid fa-tag me-1"></i>${comp.category}  •  <i class="fa-solid fa-location-dot me-1"></i>${comp.location}</p>
+                    </div>
+                    <button id="ctModalSaveBtn" data-compid="${comp.id}"
+                        style="background:rgba(255,255,255,0.2);border:none;color:white;width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;transition:0.2s;flex-shrink:0;"
+                        title="${isCompSaved ? 'Unsave' : 'Save'}">
+                        <i class="${isCompSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="ct-modal-body">
+
+                <!-- Date & Deadline -->
+                <div class="ct-modal-section">
+                    <div class="ct-date-row" style="margin-bottom:0;">
+                        <span class="ct-badge date" style="font-size:0.85rem;padding:6px 16px;"><i class="fa-regular fa-calendar"></i> ${formatDate(comp.date)} • ${comp.time}</span>
+                        <span class="ct-badge deadline" style="font-size:0.85rem;padding:6px 16px;"><i class="fa-solid fa-hourglass-half"></i> Deadline: ${formatDate(comp.deadline)}</span>
+                    </div>
+                </div>
+
+                <!-- Prize -->
+                ${comp.prize ? `
+                <div class="ct-modal-section">
+                    <div class="ct-prize-box">
+                        <div class="label">Prize Pool</div>
+                        <div class="amount">${comp.prize}</div>
+                    </div>
+                </div>` : ""}
+
+                <!-- Description -->
+                <div class="ct-modal-section">
+                    <div class="ct-modal-label">About This Competition</div>
+                    <div class="ct-modal-desc">${comp.description}</div>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="ct-modal-section">
+                    <div class="ct-modal-label">Details</div>
+                    <div class="ct-info-grid">
+                        <div class="ct-info-item"><i class="fa-solid fa-building-columns"></i><div><strong>Organizer</strong><br>${comp.organizer}</div></div>
+                        <div class="ct-info-item"><i class="fa-solid fa-location-dot"></i><div><strong>Venue</strong><br>${comp.venue}</div></div>
+                        <div class="ct-info-item"><i class="fa-solid fa-user-check"></i><div><strong>Eligibility</strong><br>${comp.eligibility}</div></div>
+                        <div class="ct-info-item"><i class="fa-solid fa-users"></i><div><strong>Team Size</strong><br>${comp.team_size}</div></div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="ct-modal-section">
+                    <div class="ct-modal-label">Venue Location</div>
+                    <div class="ct-modal-map">
+                        <iframe width="100%" height="100%" frameborder="0" style="border:0;border-radius:10px;"
+                            src="https://maps.google.com/maps?q=${encodeURIComponent(comp.name + ' ' + (comp.venue || comp.location || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="ct-modal-section">
+                    <div class="ct-modal-label">Contact & Registration</div>
+                    <div class="ct-contact-btns">${contactHTML}</div>
+                </div>
+            </div>
+        `;
+
+        modalOverlay.classList.add("show");
+        detailModal.classList.add("show");
+        document.body.style.overflow = "hidden";
+
+        // Attach save button handler
+        const ctSaveBtn = document.getElementById("ctModalSaveBtn");
+        if (ctSaveBtn) {
+            ctSaveBtn.addEventListener("click", async () => {
+                const cid = ctSaveBtn.dataset.compid;
+                if (cid) { 
+                    const isNowSaved = await toggleSaveCompetition(cid); 
+                    
+                    // Update Modal Heart instantly
+                    const icon = ctSaveBtn.querySelector("i");
+                    icon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+                    ctSaveBtn.title = isNowSaved ? 'Unsave' : 'Save';
+                    
+                    // Update Background Card Heart instantly if exists
+                    const cardBtn = document.getElementById(`saveBtn_${cid}`);
+                    if (cardBtn) {
+                        const cardIcon = cardBtn.querySelector("i");
+                        cardIcon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+                        cardBtn.style.color = isNowSaved ? '#ef4444' : '#94a3b8';
+                    }
+                }
+            });
+        }
+    }
+
+    function closeDetail() {
+        modalOverlay.classList.remove("show");
+        detailModal.classList.remove("show");
+        document.body.style.overflow = "";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("source") === "home") {
+            window.location.href = "index.html";
+        }
+    }
+
+    // Close on overlay click
+    modalOverlay.addEventListener("click", closeDetail);
+
+    // Close on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDetail();
+    });
+
+    /* ════════════════════
+       Save / Bookmark (MongoDB)
+    ════════════════════ */
+    window._savedCompetitions = [];
+    const _currentUser = localStorage.getItem("username");
+
+    async function loadSavedCompetitions() {
+        if (!_currentUser) return;
+        try {
+            const res = await fetch(`http://localhost:3000/api/saved/${_currentUser}`);
+            const data = await res.json();
+            window._savedCompetitions = data.savedCompetitions || [];
+        } catch(e) { console.error(e); }
+    }
+
+    async function toggleSaveCompetition(compId) {
+        if (!_currentUser) return;
+        try {
+            const res = await fetch('http://localhost:3000/api/saved/competition', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: _currentUser, competitionId: compId })
+            });
+            const data = await res.json();
+            window._savedCompetitions = data.savedCompetitions || [];
+            return data.saved;
+        } catch(e) { console.error(e); }
+    }
+
+    window.toggleCardSaveCompetition = async function(btn, compId) {
+        const isNowSaved = await toggleSaveCompetition(compId);
+        if (isNowSaved !== undefined) {
+            const cardIcon = btn.querySelector("i");
+            cardIcon.className = `${isNowSaved ? 'fa-solid' : 'fa-regular'} fa-heart`;
+            btn.style.color = isNowSaved ? '#ef4444' : '#94a3b8';
+        }
+    };
+
+    loadSavedCompetitions();
+
+    /* ════════════════════
+       Deep Link & Welcome
+    ════════════════════ */
+    window.addEventListener("DOMContentLoaded", () => {
+        // 1. Personalized Welcome (removed)
+
+        // 2. Parse Deep Link
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        
+        if (query) {
+            // Put query in search bar and execute search
+            searchInput.value = query;
+            doKeywordSearch();
+
+            // Automatically open detail if exactly one exact match found
+            const exactMatchComp = MOCK_COMPETITIONS.find(c => c.name.toLowerCase() === query.toLowerCase());
+            if (exactMatchComp) {
+                // slight delay to let the results render animation play smoothly under the modal
+                setTimeout(() => openDetail(exactMatchComp.id), 300);
+            }
+        } else if (urlParams.get('view') === 'recommended') {
+            const u = localStorage.getItem("username");
+            if (u) {
+                fetch(`http://localhost:3000/profile/${u}`)
+                .then(r => r.json())
+                .then(profile => {
+                    const userSkills = profile.skills || [];
+                    userSkills.forEach(skill => {
+                        const chip = Array.from(chips).find(c => c.dataset.skill.toLowerCase() === skill.toLowerCase());
+                        if (chip && !chip.classList.contains("active")) {
+                            chip.classList.add("active");
+                            if (!selectedSkills.includes(chip.dataset.skill)) selectedSkills.push(chip.dataset.skill);
+                        }
+                    });
+                    if (selectedSkills.length > 0) {
+                        selectedSummary.style.display = "block";
+                        selectedSkillsText.textContent = selectedSkills.join(", ");
+                        skillSearchBtn.disabled = false;
+                        setTimeout(() => skillSearchBtn.click(), 100);
+                    }
+                }).catch(e => console.error("Error loading profile skills:", e));
+            }
+        }
+    });
+
+    </script>
+
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+</script>
+
+</body>
+</html>

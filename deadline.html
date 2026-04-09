@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Competition Deadline Alerts</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<style>
+
+body{
+background:#f4f6f9;
+}
+
+.card{
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.03);
+}
+
+.deadline-soon{
+border-left:5px solid red;
+}
+
+.deadline-normal{
+border-left:5px solid green;
+}
+
+.back-btn{
+margin-bottom:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Auth Guard -->
+<script>
+(function(){
+  const user = localStorage.getItem("username");
+  if(!user) { window.location.href = "landing_page.html"; return; }
+  fetch(`http://localhost:3000/api/checkProfile/${user}`)
+    .then(r => r.json())
+    .then(d => { if(!d.profileCompleted) window.location.href = "profile.html"; })
+    .catch(() => {});
+})();
+function logout() { localStorage.removeItem("username"); window.location.href = "landing_page.html"; }
+</script>
+
+<!-- Navbar -->
+
+<nav class="navbar bg-dark p-3 d-flex align-items-center" style="position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: rgba(10, 18, 41, 0.95) !important; backdrop-filter: blur(10px);">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNHg88XvMz7N2DCZPR0u_U_sBAce28iWopCA&s"
+            style="height:40px;width:40px;border-radius:50%; transition: transform 0.3s ease;" onmouseover="this.style.transform='rotate(15deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0) scale(1)'">
+        <span class="ms-3 text-white fw-bold fs-4" style="letter-spacing: 1px;">EliteForge</span>
+    </a>
+
+    <ul class="nav-links mb-0 pe-4 flex gap-4 list-unstyled d-flex" style="margin-bottom:0">
+        <li><a href="index.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li><a href="academy_finder.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-compass me-1"></i>Academies</a></li>
+        <li><a href="competition_tracker.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-trophy me-1"></i>Competitions</a></li>
+        <li><a href="deadline.html" class="text-white text-decoration-none fw-bold" style="color:#facc15 !important;"><i class="fa-solid fa-bell me-1"></i>Deadline Alerts</a></li>
+        <li><a href="dashboard.html" class="text-white text-decoration-none fw-bold" style="transition: color 0.3s ease;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a></li>
+    </ul>
+
+    <div class="dropdown">
+        <div class="dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; transition: background 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            <img id="navProfilePic" src="https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; display: none; margin-right: 8px; border: 2px solid white; object-fit: cover;">
+                    <i class="fas fa-user-circle fa-lg text-white me-2" id="navProfileIcon"></i>
+                    <span class="text-white fw-semibold me-1" id="navUsername">Profile</span>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border: none; border-radius: 12px; margin-top: 10px; animation: fadeIn 0.2s ease-out;">
+            <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2 text-primary"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="help_feedback.html"><i class="fa-solid fa-circle-question me-2 text-info"></i>Help & Feedback</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const u = localStorage.getItem("username");
+  if (u) { const el = document.getElementById("navUsername"); if (el) el.textContent = u; }
+})();
+</script>
+
+
+<div class="container mt-5">
+
+<!-- Back Button -->
+
+<a class="btn bg-white back-btn text-dark text-decoration-none" href="index.html">
+<i class="fa-solid fa-arrow-left me-2"></i>Back to Home
+</a>
+
+<h3 class="mb-4">
+<i class="fa-solid fa-clock"></i> AI Deadline Alerts
+</h3>
+
+<div id="deadlineContainer" class="row"></div>
+
+</div>
+
+
+<script>
+
+const currentUser = localStorage.getItem("username");
+
+// All competitions with deadlines
+const competitions = [
+  { name: "Google Code Jam", skill: "Programming", deadline: "2026-04-10", organizer: "Google", type: "competition" },
+  { name: "AI Global Challenge", skill: "Artificial Intelligence", deadline: "2026-04-20", organizer: "MIT", type: "competition" },
+  { name: "Frontend Battle", skill: "Web Development", deadline: "2026-04-15", organizer: "Meta", type: "competition" },
+  { name: "Data Science Hackathon", skill: "Data Science", deadline: "2026-05-01", organizer: "IBM", type: "competition" },
+  { name: "CodeStorm Hackathon 2026", skill: "Programming", deadline: "2026-07-10", organizer: "IISc Bangalore", type: "competition" },
+  { name: "Deep Learning Challenge", skill: "Machine Learning", deadline: "2026-09-01", organizer: "IIT Madras", type: "competition" },
+  { name: "AI Innovation Summit", skill: "Artificial Intelligence", deadline: "2026-10-10", organizer: "IIIT Hyderabad", type: "competition" },
+  { name: "Nrityanjali Dance Festival", skill: "Dance", deadline: "2026-08-01", organizer: "Telangana Cultural Academy", type: "competition" },
+  { name: "Ongole Dance Star", skill: "Dance", deadline: "2026-07-20", organizer: "Ongole Youth Cultural", type: "competition" },
+  { name: "Sangeetham Music Festival", skill: "Music", deadline: "2026-11-30", organizer: "The Music Academy Chennai", type: "competition" },
+  { name: "Sur Sangam Singing", skill: "Singing", deadline: "2026-09-10", organizer: "Kerala Sangeetha Akademi", type: "competition" },
+  { name: "Prakasam Premier League", skill: "Cricket", deadline: "2026-06-10", organizer: "PDCA", type: "competition" },
+  { name: "Kick Masters Football", skill: "Football", deadline: "2026-07-20", organizer: "Kerala Football Association", type: "competition" },
+  { name: "Aqua Challenge Swimming", skill: "Swimming", deadline: "2026-07-05", organizer: "AP Swimming Association", type: "competition" },
+  { name: "Dravida Martial Arts Championship", skill: "Martial Arts", deadline: "2026-09-25", organizer: "TN Martial Arts Federation", type: "competition" },
+  { name: "Iron Forge CrossFit Open", skill: "Fitness Training", deadline: "2026-11-01", organizer: "CrossFit India", type: "competition" },
+  { name: "International Yoga Day Challenge", skill: "Yoga", deadline: "2026-06-15", organizer: "Karnataka Yoga Foundation", type: "competition" },
+  { name: "Chitrakala Art Olympiad", skill: "Painting", deadline: "2026-10-25", organizer: "Kerala Lalithakala Akademi", type: "competition" }
+];
+
+// Academy enrollment deadlines
+const academyDeadlines = [
+  { name: "Ongole Code Academy — New Batch", skill: "Programming", deadline: "2026-04-05", organizer: "Ongole Code Academy", type: "academy" },
+  { name: "AI Vision Academy — Summer Intake", skill: "Artificial Intelligence", deadline: "2026-04-30", organizer: "AI Vision Academy", type: "academy" },
+  { name: "DataMinds Analytics Lab — Enrollment", skill: "Data Science", deadline: "2026-05-15", organizer: "DataMinds Analytics Lab", type: "academy" },
+  { name: "Nataraja Dance Academy — Admissions", skill: "Dance", deadline: "2026-04-20", organizer: "Nataraja Dance Academy", type: "academy" },
+  { name: "Harmony Music Institute — New Session", skill: "Music", deadline: "2026-04-28", organizer: "Harmony Music Institute", type: "academy" },
+  { name: "Shanti Yoga Ashram — Teacher Training", skill: "Yoga", deadline: "2026-05-10", organizer: "Shanti Yoga Ashram", type: "academy" },
+  { name: "Dragon Warrior — New Batch", skill: "Martial Arts", deadline: "2026-04-15", organizer: "Dragon Warrior Martial Arts", type: "academy" },
+  { name: "Ongole Cricket Academy — U-16 Trials", skill: "Cricket", deadline: "2026-06-05", organizer: "Ongole Cricket Academy", type: "academy" },
+  { name: "NeuroNet ML Hub — Kaggle Prep Batch", skill: "Machine Learning", deadline: "2026-05-01", organizer: "NeuroNet ML Hub", type: "academy" }
+];
+
+const allDeadlines = [...competitions, ...academyDeadlines];
+
+let container = document.getElementById("deadlineContainer");
+
+function calculateDays(deadline) {
+  let today = new Date();
+  let end = new Date(deadline);
+  return Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function renderDeadlines(userSkills) {
+  container.innerHTML = "";
+
+  const matching = allDeadlines
+    .filter(d => userSkills.some(s => s.toLowerCase() === d.skill.toLowerCase()))
+    .filter(d => calculateDays(d.deadline) > 0)
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+  if (matching.length === 0) {
+    container.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <i class="fa-solid fa-check-circle fa-3x text-success mb-3"></i>
+        <h5>No upcoming deadlines!</h5>
+        <p class="text-muted">Add more skills to your profile to see relevant deadlines.</p>
+      </div>`;
+    return;
+  }
+
+  matching.forEach(comp => {
+    let daysLeft = calculateDays(comp.deadline);
+    let alertClass, badgeClass, badgeText;
+
+    if (daysLeft <= 3) {
+      alertClass = "deadline-soon";
+      badgeClass = "bg-danger";
+      badgeText = "⚠ Urgent";
+    } else if (daysLeft <= 7) {
+      alertClass = "deadline-soon";
+      badgeClass = "bg-warning text-dark";
+      badgeText = "⏰ Soon";
+    } else {
+      alertClass = "deadline-normal";
+      badgeClass = "bg-success";
+      badgeText = "✓ On Track";
+    }
+
+    const typeIcon = comp.type === "academy" ? "fa-graduation-cap" : "fa-trophy";
+    const typeLabel = comp.type === "academy" ? "Academy" : "Competition";
+    const typeBg = comp.type === "academy" ? "bg-info" : "bg-primary";
+
+    container.innerHTML += `
+      <div class="col-md-4 mb-4">
+        <div class="card ${alertClass}" style="border-radius:12px; overflow:hidden;">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge ${typeBg}"><i class="fa-solid ${typeIcon} me-1"></i>${typeLabel}</span>
+              <span class="badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <h5 class="mt-2">${comp.name}</h5>
+            <p class="mb-1"><i class="fa-solid fa-building me-1 text-primary"></i> <b>Organizer:</b> ${comp.organizer}</p>
+            <p class="mb-1"><i class="fa-solid fa-tag me-1 text-primary"></i> <b>Skill:</b> ${comp.skill}</p>
+            <p class="mb-1"><i class="fa-solid fa-calendar me-1 text-primary"></i> <b>Deadline:</b> ${formatDate(comp.deadline)}</p>
+            <p class="text-danger fw-bold mt-2"><i class="fa-solid fa-hourglass-half me-1"></i>${daysLeft} days left</p>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+// Fetch user skills from profile and render
+async function loadUserDeadlines() {
+  if (!currentUser) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/profile/${currentUser}`);
+    const profile = await res.json();
+    const userSkills = profile.skills || [];
+
+    if (userSkills.length === 0) {
+      container.innerHTML = `
+        <div class="col-12 text-center py-5">
+          <i class="fa-solid fa-user-pen fa-3x text-warning mb-3"></i>
+          <h5>Complete your profile first!</h5>
+          <p class="text-muted">Add skills to your profile to see personalized deadline alerts.</p>
+          <a href="profile.html" class="btn btn-primary">Go to Profile</a>
+        </div>`;
+      return;
+    }
+
+    document.querySelector("h3.mb-4").innerHTML = `<i class="fa-solid fa-clock"></i> Deadline Alerts for <span class="text-primary">${currentUser}</span>`;
+    renderDeadlines(userSkills);
+  } catch (err) {
+    container.innerHTML = `<div class="col-12 text-center py-5"><p class="text-danger">Failed to load. Please ensure the server is running.</p></div>`;
+  }
+}
+
+loadUserDeadlines();
+
+// --- Modal Logic ---
+let theDeadlineModal = null;
+
+function openDeadlineModal(name, skill, organizer, deadline, daysLeft, type) {
+  document.getElementById('deadlineModalType').innerHTML = type === 'academy' ? '<i class="fa-solid fa-graduation-cap me-1"></i> Academy' : '<i class="fa-solid fa-trophy me-1"></i> Competition';
+  document.getElementById('deadlineModalType').className = type === 'academy' ? 'badge bg-info mb-2' : 'badge bg-primary mb-2';
+  document.getElementById('deadlineModalTitle').textContent = name;
+
+  const typeIconColor = type === 'academy' ? '#0ea5e9' : '#3b82f6';
+  const typeBgColor = type === 'academy' ? '#e0f2fe' : '#dbeafe';
+
+  document.getElementById('deadlineModalBody').innerHTML = `
+      <div class="d-flex align-items-center mb-3">
+          <div style="width:50px; height:50px; background:${typeBgColor}; border-radius:12px; display:flex; align-items:center; justify-content:center; color:${typeIconColor}; font-size:1.5rem; margin-right:15px;">
+              <i class="fa-solid fa-tag"></i>
+          </div>
+          <div>
+              <h6 class="mb-0 text-muted">Skill Category</h6>
+              <h5 class="mb-0 fw-bold text-dark">${skill}</h5>
+          </div>
+      </div>
+      <div class="row g-3">
+          <div class="col-12">
+              <div class="p-3 bg-white rounded shadow-sm border d-flex align-items-center justify-content-between">
+                  <div>
+                      <p class="mb-1 text-muted small"><i class="fa-solid fa-calendar me-1"></i> Deadline</p>
+                      <p class="mb-0 fw-bold">${formatDate(deadline)}</p>
+                  </div>
+                  <div class="text-end">
+                      <p class="mb-1 text-muted small"><i class="fa-solid fa-hourglass-half me-1"></i> Time Left</p>
+                      <h5 class="mb-0 fw-bold text-danger">${daysLeft} days</h5>
+                  </div>
+              </div>
+          </div>
+          <div class="col-12">
+              <div class="p-3 bg-white rounded shadow-sm border">
+                  <p class="mb-1 text-muted small"><i class="fa-solid fa-building me-1"></i> Organizer</p>
+                  <p class="mb-0 fw-semibold">${organizer}</p>
+              </div>
+          </div>
+      </div>
+  `;
+
+  const linkTarget = type === 'academy' ? `academy_finder.html?q=${encodeURIComponent(name)}` : `competition_tracker.html?q=${encodeURIComponent(name)}`;
+  document.getElementById('deadlineModalAction').href = linkTarget;
+  document.getElementById('deadlineModalAction').innerHTML = 'Proceed to Registration <i class="fa-solid fa-arrow-right ms-1"></i>';
+
+  if (!theDeadlineModal) theDeadlineModal = new bootstrap.Modal(document.getElementById('deadlineModal'));
+  theDeadlineModal.show();
+}
+
+</script>
+
+<!-- ═════════════════ Deadline Detail Modal ═════════════════ -->
+<div class="modal fade" id="deadlineModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0a1229, #1e3a8a); color: white; border-bottom: none; padding: 24px;">
+                <div>
+                    <span class="badge mb-2" id="deadlineModalType"></span>
+                    <h4 class="modal-title fw-bold" id="deadlineModalTitle" style="margin: 0;"></h4>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light" id="deadlineModalBody">
+                <!-- Dynamic Content goes here -->
+            </div>
+            <div class="modal-footer" style="border-top: none; padding: 24px; background: white;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
+                <a href="#" id="deadlineModalAction" class="btn btn-primary" style="border-radius: 8px; background: #2563eb; border: none; padding: 8px 24px;">Proceed</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS (Required for dropdown) -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Global Navbar Profile Picture Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = localStorage.getItem("username");
+    if (u) {
+        try {
+            const res = await fetch(`http://localhost:3000/profile/${u}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.profilePic && data.profilePic.startsWith("data:")) {
+                    const pic = document.getElementById("navProfilePic");
+                    const icon = document.getElementById("navProfileIcon");
+                    if (pic && icon) {
+                        pic.src = data.profilePic;
+                        pic.style.display = "block";
+                        icon.style.display = "none";
+                    }
+                }
+            }
+        } catch(e) { console.error("Error fetching global profile pic", e); }
+    }
+});
+</script>
+
+</body>
+</html>
